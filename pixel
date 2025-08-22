@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# exit on error
+set -e
+
+CONFIG_PATH="$HOME/.config/pixel/config.json"
+BREW_PREFIX=$(brew --prefix pixel)
+EXAMPLE_PATH="${BREW_PREFIX}/config/config.example.json"
+
+if [[ ! -f "$CONFIG_PATH" ]]; then
+	echo "❌ Config not found at $CONFIG_PATH"
+	read -p "❔ Create config from example? [y/N]: " create_config
+	if [[ "$create_config" =~ ^[Yy]$ ]]; then
+    	mkdir -p "$(dirname "$CONFIG_PATH")"
+    	cp "$EXAMPLE_PATH" "$CONFIG_PATH"
+    	echo "✅ Config created at $CONFIG_PATH. Please review and fill it in."
+		exit 1
+	else
+		echo "Aborted. Please copy config/config.example.json to ~/.config/pixel/config.json and fill it in."
+		exit 1
+	fi
+fi
+
+# Stores the first command-line argument (e.g., init or deploy) into the COMMAND variable.
+COMMAND=$1
+
+# Removes the first argument (already stored in COMMAND) from the list of $@ arguments.
+shift || true
+
+case "$COMMAND" in
+  init)
+    source "${BREW_PREFIX}/libexec/lib/init.sh"
+    ;;
+  deploy-test)
+    source "${BREW_PREFIX}/libexec/lib/deploy-test.sh"
+    ;;
+  *)
+    echo "Usage: pixel <command>"
+    echo "Commands:"
+    echo "  init <project-name>    Initialize GitHub repo + dev env"
+    echo "  deploy-test <project-name>  (Coming soon)"
+    ;;
+esac
