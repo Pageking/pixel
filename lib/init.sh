@@ -30,7 +30,7 @@ DOMAIN=$(jq -r '.servers.server_1.domain' "$CONFIG_PATH")
 GITHUB_ORG=$(jq -r '.github.org' "$CONFIG_PATH")
 MAIN_REPO=$(jq -r '.github.main_repo' "$CONFIG_PATH")
 TEMPLATE_REPO=$(jq -r '.github.template_repo' "$CONFIG_PATH")
-DEPLOY_KEY=$(ssh "$SERVER" 'cat /opt/deploy_keys/info-deploy')
+# DEPLOY_KEY=$(ssh "$SERVER" 'cat /opt/deploy_keys/info-deploy')
 
 echo "📦 Pulling '$MAIN_REPO'..."
 git clone "https://github.com/$GITHUB_ORG/$MAIN_REPO.git"
@@ -40,7 +40,7 @@ echo "📦 Creating repo '$PROJECT_NAME' from template '$TEMPLATE_REPO'..."
 gh repo create "$GITHUB_ORG/$PROJECT_NAME" \
   --template "$GITHUB_ORG/$TEMPLATE_REPO" \
   --private
-gh secret set "PLESK_SSH_KEY" --body "$DEPLOY_KEY" --repo "$GITHUB_ORG/$PROJECT_NAME"
+# gh secret set "PLESK_SSH_KEY" --body "$DEPLOY_KEY" --repo "$GITHUB_ORG/$PROJECT_NAME"
 gh secret set "PLESK_SERVER" --body "$SERVER" --repo "$GITHUB_ORG/$PROJECT_NAME"
 gh secret set "PLESK_DOMAIN" --body "$DOMAIN" --repo "$GITHUB_ORG/$PROJECT_NAME"
 
