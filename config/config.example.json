@@ -1,6 +1,7 @@
 {
     "github": {
         "org": "",
+        "main_repo": "",
         "template_repo": ""
     },
     "servers": {
