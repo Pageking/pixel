@@ -11,9 +11,9 @@ fi
 
 cd "wp-content/themes"
 
-if [ ! -d "pk-theme" ];
+if [ -d "pk-theme" ];
 then
-  echo "❌ Error: This command must be run in a theme folder where 'pk-theme/' exists."
+  echo "❌ Error: This command must be run without an existing pk-theme folder."
   echo "📁 Current directory: $(pwd)"
   exit 1
 fi
