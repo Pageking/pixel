@@ -89,5 +89,5 @@ echo "✅ Domain created"
 read -p "Do you also want to sync the plugins and database? [y/N]: " sync_plugins
 if [[ "$sync_plugins" =~ ^[Yy]$ ]]; then
 	source "$(dirname "${BASH_SOURCE[0]}")/helpers/sync-dev-to-test.sh"
-	sync_dev_to_test "$PROJECT_NAME" "$PLESK_USER" "$PLESK_PASS"
+	sync_dev_to_test "$PROJECT_NAME"
 fi
