@@ -1,5 +1,6 @@
 #!/bin/bash
 source "$(dirname "${BASH_SOURCE[0]}")/helpers/check-public-folder.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/helpers/get-project-name.sh"
 check_public_folder
 
 # === CONFIGURATION ===
@@ -14,7 +15,7 @@ WP_ADMIN_EMAIL=$(jq -r '.wp.admin_email' "$CONFIG_PATH")
 
 WWW_ROOT=$(jq -r '.servers.server_1.www_root' "$CONFIG_PATH")
 
-read -p "Enter the new Plesk project name: " PROJECT_NAME
+PROJECT_NAME=$(get_project_name)
 if [[ ! "$PROJECT_NAME" =~ ^[a-z0-9-]+$ ]]; then
   echo "Invalid project name. Use only lowercase letters, numbers, and hyphens (no spaces or special characters)."
   exit 1
@@ -26,7 +27,6 @@ DB_PASS="$(openssl rand -base64 12)"
 GIT_REPO="git@github.com-info:$(jq -r '.github.org' "$CONFIG_PATH")/pk-theme.git"
 TARGET_DIR="/var/www/vhosts/${PROJECT_NAME}.${DOMAIN}/${WWW_ROOT}/wp-content/themes"
 
-echo "👷 Creating domain on Plesk with project name '$PROJECT_NAME'"
 SUFFIX=$(LC_ALL=C tr -dc a-z0-9 </dev/urandom | head -c 10)
 PLESK_USER="${DOMAIN}_${SUFFIX}"
 PLESK_PASS=$(openssl rand -base64 16)
@@ -55,6 +55,7 @@ else
   echo "✅ Credentials saved to 1Password vault '$OP_VAULT' as '$OP_ITEM_NAME'"
 fi
 
+echo "👷 Creating domain on Plesk with project name '$PROJECT_NAME'"
 ssh "$SERVER" bash <<EOF
 # Exit on first failure
 set -e 

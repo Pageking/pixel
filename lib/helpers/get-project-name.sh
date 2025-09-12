@@ -1,3 +1,4 @@
 get_project_name() {
-	export PROJECT_NAME=$(basename "$(dirname "$(dirname "$PWD")")")
+	local project_name=$(basename "$(dirname "$(dirname "$PWD")")")
+	echo "$project_name"
 }

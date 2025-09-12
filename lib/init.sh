@@ -1,9 +1,10 @@
 #!/bin/bash
 
 source "$(dirname "${BASH_SOURCE[0]}")/helpers/check-public-folder.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/helpers/get-project-name.sh"
 check_public_folder
 
-read -p "Enter the project name: " PROJECT_NAME
+PROJECT_NAME=$(get_project_name)
 if [[ ! "$PROJECT_NAME" =~ ^[a-z0-9-]+$ ]]; then
   echo "Invalid project name. Use only lowercase letters, numbers, and hyphens (no spaces or special characters)."
   exit 1

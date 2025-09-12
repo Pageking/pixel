@@ -1,10 +1,12 @@
 #!/bin/bash
 source "$(dirname "${BASH_SOURCE[0]}")/get-credentials.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/get-project-name.sh"
+
 sync_dev_to_test() {
 SERVER=$(jq -r '.servers.server_1.server' "$CONFIG_PATH")
 DOMAIN=$(jq -r '.servers.server_1.domain' "$CONFIG_PATH")
 IP=$(jq -r '.servers.server_1.ip' "$CONFIG_PATH")
-PROJECT_NAME=$1
+PROJECT_NAME=$(get_project_name)
 get_plesk_credentials "$PROJECT_NAME" "$DOMAIN" || { echo "Failed to get Plesk credentials"; return 1; }
 rsync -avzh --progress --delete-after --update "wp-content/plugins" ${SERVER}:/var/www/vhosts/${PROJECT_NAME}.${DOMAIN}/httpdocs/wp-content/
 echo "✅ Plugins synchronized"

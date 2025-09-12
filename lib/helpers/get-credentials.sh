@@ -1,6 +1,8 @@
+source "$(dirname "${BASH_SOURCE[0]}")/get-project-name.sh"
 get_plesk_credentials() {
-  local project_name="$1"
-  local domain="$2"
+  CONFIG_PATH="$HOME/.config/pixel/config.json"
+  local project_name=$(get_project_name)
+  local domain=$(jq -r '.servers.server_1.domain' "$CONFIG_PATH")
   local vault="Credentials"
 
   local item_name="Plesk: ${project_name}.${domain}"
