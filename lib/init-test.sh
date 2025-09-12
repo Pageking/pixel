@@ -63,6 +63,9 @@ set -e
 # Creating Domain
 plesk bin domain --create ${PROJECT_NAME}.${DOMAIN} -ip $IP -hosting true -www-root $WWW_ROOT -login $PLESK_USER -passwd $PLESK_PASS
 
+# Enable SSH access
+plesk bin subscription_settings -u ${PROJECT_NAME}.${DOMAIN} -manage_sh_access true
+
 # Create database
 plesk bin database --create $DB_NAME -domain ${PROJECT_NAME}.${DOMAIN} -type mysql
 
@@ -78,8 +81,9 @@ plesk ext wp-toolkit --install \
     -admin-password $WP_ADMIN_PASS \
     -db-name $DB_NAME \
     -db-user $DB_USER \
-    -db-password $DB_PASS
-	
+    -db-password $DB_PASS \
+	-table-prefix $DB_PREFIX
+
 # Clone main theme into created 
 git clone $GIT_REPO $TARGET_DIR/pk-theme
 
