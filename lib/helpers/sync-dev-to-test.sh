@@ -1,5 +1,5 @@
 #!/bin/bash
-source "$(dirname "${BASH_SOURCE[0]}")/get_credentials.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/get-credentials.sh"
 sync_dev_to_test() {
 SERVER=$(jq -r '.servers.server_1.server' "$CONFIG_PATH")
 DOMAIN=$(jq -r '.servers.server_1.domain' "$CONFIG_PATH")

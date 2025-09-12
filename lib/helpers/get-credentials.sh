@@ -1,7 +1,7 @@
 get_plesk_credentials() {
   local project_name="$1"
   local domain="$2"
-  local vault="${3:-"Credentials"}"
+  local vault="Credentials"
 
   local item_name="Plesk: ${project_name}.${domain}"
   local item_json
