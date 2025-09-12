@@ -1,5 +1,4 @@
 #!/bin/bash
-
 source "$(dirname "${BASH_SOURCE[0]}")/helpers/check-public-folder.sh"
 check_public_folder
 
@@ -32,6 +31,29 @@ SUFFIX=$(LC_ALL=C tr -dc a-z0-9 </dev/urandom | head -c 10)
 PLESK_USER="${DOMAIN}_${SUFFIX}"
 PLESK_PASS=$(openssl rand -base64 16)
 
+# === Save credentials in 1Password ===
+OP_VAULT="Credentials"  # <-- Change to your actual vault name or ID
+OP_ITEM_NAME="Plesk: ${PROJECT_NAME}.${DOMAIN}"
+
+# Check if item already exists
+EXISTING_ITEM=$(op item list --vault "$OP_VAULT" --categories=Login --format=json | jq -r --arg name "$OP_ITEM_NAME" '.[] | select(.title == $name) | .id')
+
+if [[ -n "$EXISTING_ITEM" ]]; then
+  echo "⚠️ 1Password item already exists for $OP_ITEM_NAME. Skipping creation."
+else
+  echo "💾 Saving credentials to 1Password..."
+
+  op item create \
+    --vault "$OP_VAULT" \
+    --category Login \
+    "username=$PLESK_USER" \
+    "password=$PLESK_PASS" \
+    "url=https://${PROJECT_NAME}.${DOMAIN}" \
+    "notes=Auto-generated on $(date)" \
+    title="$OP_ITEM_NAME"
+
+  echo "✅ Credentials saved to 1Password vault '$OP_VAULT' as '$OP_ITEM_NAME'"
+fi
 
 ssh "$SERVER" bash <<EOF
 # Exit on first failure
@@ -64,6 +86,8 @@ git clone -b test git@github.com-info:$(jq -r '.github.org' "$CONFIG_PATH")/${PR
 EOF
 echo "✅ Domain created"
 
-rsync -avzh --progress --delete-after --update "wp-content/plugins" ${SERVER}:/var/www/vhosts/${PROJECT_NAME}.${DOMAIN}/httpdocs/wp-content/
-
-echo "✅ Plugins synchronized"
+read -p "Do you also want to sync the plugins and database? [y/N]: " sync_plugins
+if [[ "$sync_plugins" =~ ^[Yy]$ ]]; then
+	source "$(dirname "${BASH_SOURCE[0]}")/helpers/sync-dev-to-test.sh"
+	sync_dev_to_test "$PROJECT_NAME" "$PLESK_USER" "$PLESK_PASS"
+fi

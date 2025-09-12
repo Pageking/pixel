@@ -31,13 +31,13 @@ case "$COMMAND" in
   init)
     source "${BREW_PREFIX}/libexec/lib/init.sh"
     ;;
-  deploy-test)
-    source "${BREW_PREFIX}/libexec/lib/deploy-test.sh"
+  init-test)
+    source "${BREW_PREFIX}/libexec/lib/init-test.sh"
     ;;
   *)
     echo "Usage: pixel <command>"
     echo "Commands:"
-    echo "  init <project-name>    Initialize GitHub repo + dev env"
-    echo "  deploy-test <project-name>  (Coming soon)"
+    echo "  init     		Initialize GitHub repo + dev environment"
+    echo "  init-test     	Initialize test environment on Plesk server"
     ;;
 esac
