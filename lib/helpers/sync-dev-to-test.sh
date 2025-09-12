@@ -12,7 +12,7 @@ echo "✅ Plugins synchronized"
 if [[ -f "database.sql" ]]; then
 	echo "🔄 Syncing database.sql to server..."
 	scp database.sql ${SERVER}:/var/www/vhosts/${PROJECT_NAME}.${DOMAIN}/httpdocs/
-	sshpass -p "${PLESK_PASS}" ssh -o StrictHostKeyChecking=no "${PLESK_USER}.${IP}" bash <<EOF
+	sshpass -p "${PLESK_PASS}" ssh -o StrictHostKeyChecking=no "${PLESK_USER}@${IP}" bash <<EOF
 	# Exit on first failure
 	set -e
 

@@ -34,10 +34,16 @@ case "$COMMAND" in
   init-test)
     source "${BREW_PREFIX}/libexec/lib/init-test.sh"
     ;;
+  project-name)
+	source "${BREW_PREFIX}/libexec/lib/helpers/get-project-name.sh"
+	get_project_name
+	echo "$PROJECT_NAME"
+	;;
   *)
     echo "Usage: pixel <command>"
     echo "Commands:"
     echo "  init     		Initialize GitHub repo + dev environment"
     echo "  init-test     	Initialize test environment on Plesk server"
+	echo "  project-name	Get the current project name based on directory structure"
     ;;
 esac
