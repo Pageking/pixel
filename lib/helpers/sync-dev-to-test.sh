@@ -14,14 +14,13 @@ echo "✅ Plugins synchronized"
 if [[ -f "database.sql" ]]; then
 	echo "🔄 Syncing database.sql to server..."
 	scp database.sql ${SERVER}:/var/www/vhosts/${PROJECT_NAME}.${DOMAIN}/httpdocs/
-	sshpass -p "${PLESK_PASS}" ssh -o StrictHostKeyChecking=no "${PLESK_USER}@${IP}" bash <<EOF
-	# Exit on first failure
+	sshpass -p "${PLESK_PASS}" ssh -T "${PLESK_USER}@${IP}" <<EOF
 	set -e
-
-	cd httpdocs
-
-	wp db import database.sql
-	wp search-replace '${PROJECT_NAME}.local' '${PROJECT_NAME}.${DOMAIN}' --skip-columns=guid
+	bash -lc '
+		cd httpdocs
+		wp db import database.sql
+		wp search-replace '${PROJECT_NAME}.local' '${PROJECT_NAME}.${DOMAIN}' --skip-columns=guid
+	'
 EOF
 	echo "✅ Database imported"
 else

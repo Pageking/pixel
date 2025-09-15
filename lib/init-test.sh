@@ -20,7 +20,7 @@ if [[ ! "$PROJECT_NAME" =~ ^[a-z0-9-]+$ ]]; then
   echo "Invalid project name. Use only lowercase letters, numbers, and hyphens (no spaces or special characters)."
   exit 1
 fi
-DB_NAME="${DB_PREFIX}_${PROJECT_NAME}"
+DB_NAME="${PROJECT_NAME}"
 DB_USER="${DB_NAME}_user"
 DB_PASS="$(openssl rand -base64 12)"
 
