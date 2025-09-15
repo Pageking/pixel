@@ -81,8 +81,7 @@ plesk ext wp-toolkit --install \
     -admin-password $WP_ADMIN_PASS \
     -db-name $DB_NAME \
     -db-user $DB_USER \
-    -db-password $DB_PASS \
-	-table-prefix $DB_PREFIX
+    -db-password $DB_PASS
 
 # Clone main theme into created 
 git clone $GIT_REPO $TARGET_DIR/pk-theme
