@@ -20,6 +20,16 @@ if [[ -f "database.sql" ]]; then
 		cd httpdocs
 		wp db import database.sql
 		wp search-replace '${PROJECT_NAME}.local' '${PROJECT_NAME}.${DOMAIN}' --skip-columns=guid
+
+		if [ -f wp-cli.yml ]; then
+		echo \"wp-cli.yml already exists — skipping creation.\"
+		else
+		printf \"%s\n\" \"apache_modules:\" \"  - mod_rewrite\" > wp-cli.yml
+		echo \"Created wp-cli.yml with apache_modules: mod_rewrite\"
+		fi
+
+		wp rewrite flush --hard
+		rm database.sql
 	'
 EOF
 	echo "✅ Database imported"
