@@ -14,23 +14,24 @@ echo "✅ Plugins synchronized"
 if [[ -f "database.sql" ]]; then
 	echo "🔄 Syncing database.sql to server..."
 	scp database.sql ${SERVER}:/var/www/vhosts/${PROJECT_NAME}.${DOMAIN}/httpdocs/
-	sshpass -p "${PLESK_PASS}" ssh -T "${PLESK_USER}@${IP}" <<EOF
-	set -e
-	bash -lc '
-		cd httpdocs
-		wp db import database.sql
-		wp search-replace '${PROJECT_NAME}.local' '${PROJECT_NAME}.${DOMAIN}' --skip-columns=guid
+fi
+if [[ -f "wp-cli.yml" ]]; then
+	echo "🔄 Syncing wp-cli.yml to server..."
+	scp wp-cli.yml ${SERVER}:/var/www/vhosts/${PROJECT_NAME}.${DOMAIN}/httpdocs/
+fi
+if [[ -f "database.sql" && -f "wp-cli.yml" ]]; then
+sshpass -p "${PLESK_PASS}" ssh -T "${PLESK_USER}@${IP}" <<EOF
+set -e
+bash -lc '
+	cd httpdocs
+	wp db import database.sql
+	wp search-replace '${PROJECT_NAME}.local' '${PROJECT_NAME}.${DOMAIN}'
 
-		if [ -f wp-cli.yml ]; then
-		echo \"wp-cli.yml already exists — skipping creation.\"
-		else
-		printf \"%s\n\" \"apache_modules:\" \"  - mod_rewrite\" > wp-cli.yml
-		echo \"Created wp-cli.yml with apache_modules: mod_rewrite\"
-		fi
+	wp rewrite flush --hard
+	wp cache flush
 
-		wp rewrite flush --hard
-		rm database.sql
-	'
+	rm database.sql
+'
 EOF
 	echo "✅ Database imported"
 else
