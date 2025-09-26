@@ -46,9 +46,9 @@ case "$COMMAND" in
   *)
     echo "Usage: pixel <command>"
     echo "Commands:"
-    echo "  init			Initialize GitHub repo + dev environment"
-    echo "  init-test		Initialize test environment on Plesk server"
-	echo "  project-name		Get the current project name based on directory structure"
-	echo "  sync-dev-test		Sync plugins and database from dev to test environment"
+    echo "  init				Initialize GitHub repo + dev environment"
+    echo "  init-test			Initialize test environment on Plesk server"
+	echo "  project-name			Get the current project name based on directory structure"
+	echo "  sync-dev-test			Sync plugins and database from dev to test environment"
     ;;
 esac

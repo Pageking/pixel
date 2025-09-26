@@ -31,7 +31,7 @@ DOMAIN=$(jq -r '.servers.server_1.domain' "$CONFIG_PATH")
 GITHUB_ORG=$(jq -r '.github.org' "$CONFIG_PATH")
 MAIN_REPO=$(jq -r '.github.main_repo' "$CONFIG_PATH")
 TEMPLATE_REPO=$(jq -r '.github.template_repo' "$CONFIG_PATH")
-# DEPLOY_KEY=$(ssh "$SERVER" 'cat /opt/deploy_keys/info-deploy')
+DEPLOY_KEY=$(ssh "$SERVER" 'cat /opt/deploy_keys/info-deploy')
 
 echo "📦 Pulling '$MAIN_REPO'..."
 git clone "https://github.com/$GITHUB_ORG/$MAIN_REPO.git"

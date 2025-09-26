@@ -90,6 +90,13 @@ git clone -b test git@github.com-info:$(jq -r '.github.org' "$CONFIG_PATH")/${PR
 EOF
 echo "✅ Domain created"
 
+if [[ -f "wp-cli.yml" ]]; then
+	echo "🔄 Syncing wp-cli.yml to server..."
+	scp wp-cli.yml ${SERVER}:/var/www/vhosts/${PROJECT_NAME}.${DOMAIN}/httpdocs/
+else 
+	echo "⚠️ No wp-cli.yml file found in the current folder. Skipping wp-cli.yml upload."
+fi
+
 read -p "Do you also want to sync the plugins and database? [y/N]: " sync_plugins
 if [[ "$sync_plugins" =~ ^[Yy]$ ]]; then
 	source "$(dirname "${BASH_SOURCE[0]}")/helpers/sync-dev-to-test.sh"
