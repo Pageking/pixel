@@ -41,7 +41,7 @@ echo "📦 Creating repo '$PROJECT_NAME' from template '$TEMPLATE_REPO'..."
 gh repo create "$GITHUB_ORG/$PROJECT_NAME" \
   --template "$GITHUB_ORG/$TEMPLATE_REPO" \
   --private
-# gh secret set "PLESK_SSH_KEY" --body "$DEPLOY_KEY" --repo "$GITHUB_ORG/$PROJECT_NAME"
+gh secret set "PLESK_SSH_KEY" --body "$DEPLOY_KEY" --repo "$GITHUB_ORG/$PROJECT_NAME"
 gh secret set "PLESK_SERVER" --body "$SERVER" --repo "$GITHUB_ORG/$PROJECT_NAME"
 gh secret set "PLESK_DOMAIN" --body "$DOMAIN" --repo "$GITHUB_ORG/$PROJECT_NAME"
 
