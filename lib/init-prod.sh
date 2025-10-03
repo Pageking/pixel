@@ -4,6 +4,7 @@ set -e
 
 source "$(dirname "${BASH_SOURCE[0]}")/helpers/check-public-folder.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/helpers/get-project-name.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/helpers/get-cw-app-folder.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/helpers/get-cw-bearer.sh"
 check_public_folder
 get_cw_bearer
@@ -57,3 +58,7 @@ echo "✅ New app created successfully with ID: $APP_ID"
 
 getAppFolder "$ACCESS_TOKEN" "$SERVER_ID" "$APP_ID"
 echo "App folder name: $APP_FOLDER_NAME"
+
+cwGenerateGitSSH "$ACCES_TOKEN" "$SERVER_ID" "$APP_ID"
+
+echo "CW Git SSH key: $CW_GIT_SSH_KEY"

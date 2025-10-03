@@ -2,7 +2,7 @@
 IFS=$'\n'
 set -e
 
-function getAppFolder() {
+getAppFolder() {
 	local SERVER_LIST=$(curl -s GET "https://api.cloudways.com/api/v1/server" \
 	-H "Authorization: Bearer $1")
 
