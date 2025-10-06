@@ -7,6 +7,8 @@ source "$(dirname "${BASH_SOURCE[0]}")/helpers/get-project-name.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/helpers/get-cw-app-folder.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/helpers/get-cw-bearer.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/helpers/cw-generate-git-ssh.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/helpers/cw-clone-project-repo.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/helpers/cw-clone-main-repo.sh"
 check_public_folder
 get_cw_bearer
 
@@ -20,6 +22,9 @@ do
 	# Fetch server details
 	SERVER_DETAILS=$(echo "$SERVERS" | jq -r --arg LABEL "$server" '.servers[] | select(.label == $LABEL)')
 	SERVER_ID=$(echo "$SERVER_DETAILS" | jq -r '.id')
+	SERVER_IP=$(echo "$SERVER_DETAILS" | jq -r '.public_ip')
+	SERVER_USER=$(echo "$SERVER_DETAILS" | jq -r '.master_user')
+	SERVER_PASS=$(echo "$SERVER_DETAILS" | jq -r '.master_password')
 	break;
 done
 
@@ -70,3 +75,9 @@ getAppFolder "$ACCESS_TOKEN" "$SERVER_ID" "$APP_ID"
 echo "App folder name: $APP_FOLDER_NAME"
 
 cwGenerateGitSSH "$ACCESS_TOKEN" "$SERVER_ID" "$APP_ID"
+
+cwCloneProjectRepo "$ACCESS_TOKEN" "$SERVER_ID" "$APP_ID"
+
+cwCloneMainRepo "$SERVER_IP" "$SERVER_USER" "$SERVER_PASS" "$APP_FOLDER_NAME"
+
+echo "🗂️ En nu de database nog!"

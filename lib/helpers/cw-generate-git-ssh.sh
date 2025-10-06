@@ -21,5 +21,9 @@ cwGenerateGitSSH() {
 			\"app_id\": \"$3\"
 	}" | jq -r ".key")
 
-	export $CW_GIT_SSH_KEY
+	echo "$CW_GIT_SSH_KEY" > cw_git_key.pub
+
+	gh repo deploy-key add ./cw_git_key.pub --repo "$GITHUB_ORG/$PROJECT_NAME" --title "Cloudways Production"
+
+	rm -f cw_git_key.pub
 }
