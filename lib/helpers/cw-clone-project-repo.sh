@@ -14,6 +14,6 @@ cwCloneProjectRepo() {
 		\"app_id\": \"$3\",
 		\"git_url\": \"git@github.com:Pageking/$project_name.git\",
 		\"branch_name\": \"production\",
-		\"deploy_path\": \"public_html/wp-content/themes/pk-theme-child/\"
+		\"deploy_path\": \"wp-content/themes/pk-theme-child/\"
 	}")
 }
