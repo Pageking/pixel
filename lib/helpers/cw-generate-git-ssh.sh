@@ -8,7 +8,7 @@ cwGenerateGitSSH () {
 		-H "Content-Type: application/json" \
 		-d "{
 			\"server_id\": "$2",
-			\"app_id\": "$2"
+			\"app_id\": "$3"
 	}")
 
 	echo $GENERATE_KEY
