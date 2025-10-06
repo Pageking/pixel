@@ -2,7 +2,10 @@
 IFS=$'\n'
 set -e
 
-cwGenerateGitSSH () {
+cwGenerateGitSSH() {
+	echo "Token: $1"
+	echo "Server id: $2"
+	echo "App id: $3"
 	local GENERATE_KEY=$(curl -s -X POST "https://api.cloudways.com/api/v1/git/generateKey" \
 		-H "Authorization: Bearer $1" \
 		-H "Content-Type: application/json" \
