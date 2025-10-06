@@ -69,4 +69,4 @@ echo "✅ New app created successfully with ID: $APP_ID"
 getAppFolder "$ACCESS_TOKEN" "$SERVER_ID" "$APP_ID"
 echo "App folder name: $APP_FOLDER_NAME"
 
-cwGenerateGitSSH "$ACCES_TOKEN" "$SERVER_ID" "$APP_ID"
+cwGenerateGitSSH "$ACCESS_TOKEN" "$SERVER_ID" "$APP_ID"
