@@ -6,6 +6,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/helpers/check-public-folder.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/helpers/get-project-name.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/helpers/get-cw-app-folder.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/helpers/get-cw-bearer.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/helpers/cw-generate-git-ssh.sh"
 check_public_folder
 get_cw_bearer
 
@@ -22,13 +23,22 @@ do
 	break;
 done
 
+while true; do
+	read -p "Cloudways application label: " CW_LABEL
+	if [ -n "$CW_LABEL" ]; then
+		break
+	else
+		echo "Application label cannot be empty. Please enter a value."
+	fi
+done
+
 NEW_APP=$(curl -s POST "https://api.cloudways.com/api/v1/app" \
 	-H "Authorization: Bearer $ACCESS_TOKEN" \
 	-H "Content-Type: application/json" \
 	-d "{
 		\"server_id\": $SERVER_ID,
 		\"application\": \"wordpress\",
-		\"app_label\": \"Test app (delete)\"
+		\"app_label\": \"$CW_LABEL\"
 	}")
 
 echo "$NEW_APP" | jq '.'
@@ -60,5 +70,3 @@ getAppFolder "$ACCESS_TOKEN" "$SERVER_ID" "$APP_ID"
 echo "App folder name: $APP_FOLDER_NAME"
 
 cwGenerateGitSSH "$ACCES_TOKEN" "$SERVER_ID" "$APP_ID"
-
-echo "CW Git SSH key: $CW_GIT_SSH_KEY"
