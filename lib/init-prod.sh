@@ -21,6 +21,7 @@ do
 	echo "You selected server: $server"
 	# Fetch server details
 	SERVER_DETAILS=$(echo "$SERVERS" | jq -r --arg LABEL "$server" '.servers[] | select(.label == $LABEL)')
+	SERVER_LABEL=$(echo "$SERVER_DETAILS" | jq -r '.label')
 	SERVER_ID=$(echo "$SERVER_DETAILS" | jq -r '.id')
 	SERVER_IP=$(echo "$SERVER_DETAILS" | jq -r '.public_ip')
 	SERVER_USER=$(echo "$SERVER_DETAILS" | jq -r '.master_user')
@@ -74,10 +75,14 @@ echo "✅ New app created successfully with ID: $APP_ID"
 getAppFolder "$ACCESS_TOKEN" "$SERVER_ID" "$APP_ID"
 echo "App folder name: $APP_FOLDER_NAME"
 
-cwGenerateGitSSH "$ACCESS_TOKEN" "$SERVER_ID" "$APP_ID"
+cwGenerateGitSSH "$ACCESS_TOKEN" "$SERVER_ID" "$APP_ID" "$SERVER_LABEL"
 
 cwCloneProjectRepo "$ACCESS_TOKEN" "$SERVER_ID" "$APP_ID"
 
 cwCloneMainRepo "$SERVER_IP" "$SERVER_USER" "$SERVER_PASS" "$APP_FOLDER_NAME"
 
-echo "🗂️ En nu de database nog!"
+read -p "Do you also want to sync the plugins and database? [y/N]: " sync_to_prod
+if [[ "$sync_plugins" =~ ^[Yy]$ ]]; then
+	source "$(dirname "${BASH_SOURCE[0]}")/helpers/sync-dev-to-prod.sh"
+	sync_dev_to_prod "$SERVER_IP" "$SERVER_USER" "$APP_FOLDER_NAME"
+fi

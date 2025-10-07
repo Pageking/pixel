@@ -27,7 +27,7 @@ cwGenerateGitSSH() {
 
 	echo "$CW_GIT_SSH_KEY" > cw_git_key.pub
 
-	gh repo deploy-key add ./cw_git_key.pub --repo "$GITHUB_ORG/$PROJECT_NAME" --title "Cloudways Production"
+	gh repo deploy-key add ./cw_git_key.pub --repo "$GITHUB_ORG/$PROJECT_NAME" --title "Cloudways Production - $S4"
 
 	rm -f cw_git_key.pub
 }
