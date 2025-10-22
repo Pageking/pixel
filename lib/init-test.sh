@@ -56,7 +56,7 @@ else
 fi
 
 echo "👷 Creating domain on Plesk with project name '$PROJECT_NAME'"
-ssh "$SERVER" bash <<EOF
+ssh -o IgnoreUnknown=UseKeychain "$SERVER" bash <<EOF
 # Exit on first failure
 set -e 
 
