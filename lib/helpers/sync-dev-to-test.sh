@@ -55,7 +55,7 @@ sync_dev_to_test() {
 		scp wp-cli.yml ${SERVER}:/var/www/vhosts/${PROJECT_NAME}.${DOMAIN}/httpdocs/
 	fi
 	if [[ -f "database.sql" && -f "wp-cli.yml" && "$sync_db_to_test" =~ ^[Yy]$ ]]; then
-	sshpass -p "${PLESK_PASS}" ssh -T "${PLESK_USER}@${IP}" <<EOF
+	sshpass -p "${PLESK_PASS}" ssh -T -o IgnoreUnknown=UseKeychain "${PLESK_USER}@${IP}" <<EOF
 	set -e
 	bash -lc '
 		cd httpdocs
