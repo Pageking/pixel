@@ -34,7 +34,7 @@ sync_dev_to_test() {
 	get_plesk_credentials "$PROJECT_NAME" "$DOMAIN" || { echo "Failed to get Plesk credentials"; return 1; }
 
 	read -p "Sync the plugins? [y/N]: " sync_plugins_to_test
-	if [[ "$sync_plugins" =~ ^[Yy]$ ]]; then
+	if [[ "$sync_plugins_to_test" =~ ^[Yy]$ ]]; then
 		rsync -avzh --progress --delete-after --update "wp-content/plugins" ${SERVER}:/var/www/vhosts/${PROJECT_NAME}.${DOMAIN}/httpdocs/wp-content/
 		echo "✅ Plugins synchronized"
 	fi
