@@ -28,6 +28,9 @@ COMMAND=$1
 shift || true
 
 case "$COMMAND" in
+  -v)
+    echo "Pixel CLI version 1.0.33"
+	;;
   init)
     source "${BREW_PREFIX}/libexec/lib/init.sh"
     ;;
@@ -46,6 +49,10 @@ case "$COMMAND" in
 	source "${BREW_PREFIX}/libexec/lib/helpers/sync-dev-to-test.sh"
 	sync_dev_to_test
 	;;
+  test-pull-main)
+	source "${BREW_PREFIX}/libexec/lib/helpers/test-pull-main.sh"
+	test_pull_main
+	;;
   *)
     echo "Usage: pixel <command>"
     echo "Commands:"
@@ -54,5 +61,6 @@ case "$COMMAND" in
     echo "  init-prod			Initialize production environment on Cloudways server"
 	echo "  project-name			Get the current project name based on directory structure"
 	echo "  sync-dev-test			Sync plugins and database from dev to test environment"
+	echo "  test-pull-main			Pull latest main branch on test environment"
     ;;
 esac
