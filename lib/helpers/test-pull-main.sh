@@ -37,7 +37,7 @@ test_pull_main() {
 	set -e
 	bash -lc '
 		cd /
-		cd var/www/vhosts/${PROJECT_NAME}/httpdocs/wp-content/themes/pk-theme
+		cd /var/www/vhosts/${PROJECT_NAME}.${DOMAIN}/httpdocs/wp-content/themes/$(jq -r '.github.main_repo' "$CONFIG_PATH")
 
 		git config --global --add safe.directory $(pwd)
 		git fetch origin main
