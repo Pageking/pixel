@@ -14,15 +14,15 @@ removeTest() {
 	local CONFIG_PATH="$HOME/.config/pixel/config.json"
 
 	# --- Load config safely ---
-	local SERVER DOMAIN IP REPO VAULT ITEM_NAME
+	local SERVER DOMAIN IP VAULT
 	SERVER=$(jq -r '.servers.server_1.server' "$CONFIG_PATH")
 	DOMAIN=$(jq -r '.servers.server_1.domain' "$CONFIG_PATH")
 	IP=$(jq -r '.servers.server_1.ip' "$CONFIG_PATH")
 	VAULT="Credentials"
-	ITEM_NAME="Plesk: ${PROJECT_NAME}.${DOMAIN}"
+	
 
 	# --- Validate config ---
-	for var in SERVER DOMAIN IP REPO; do
+	for var in SERVER DOMAIN IP VAULT; do
 		if [[ -z "${!var}" || "${!var}" == "null" ]]; then
 			echo "❌ Config error: $var is empty"
 			exit 1
@@ -45,6 +45,8 @@ removeTest() {
 EOF
 	echo "🗑️ Test environment for project '$PROJECT_NAME' removed from Plesk."
 
+	# --- Delete 1Password item ---
+	ITEM_NAME="Plesk: ${PROJECT_NAME}.${DOMAIN}"
 	op item delete "$ITEM_NAME" --vault "$VAULT" || {
 		echo "❌ Could not delete 1Password item '$ITEM_NAME' from vault '$VAULT'"
 		return 1
