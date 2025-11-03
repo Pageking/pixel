@@ -62,5 +62,6 @@ case "$COMMAND" in
 	echo "  project-name			Get the current project name based on directory structure"
 	echo "  sync-dev-test			Sync plugins and database from dev to test environment"
 	echo "  test-pull-main			Pull latest main branch on test environment"
+	echo "  remove-test				Remove test environment from Plesk server"
     ;;
 esac
