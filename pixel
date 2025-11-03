@@ -29,7 +29,7 @@ shift || true
 
 case "$COMMAND" in
   -v)
-    echo "Pixel CLI version 1.0.33"
+    echo "Pixel CLI version 1.0.39"
 	;;
   init)
     source "${BREW_PREFIX}/libexec/lib/init.sh"
@@ -52,6 +52,10 @@ case "$COMMAND" in
   test-pull-main)
 	source "${BREW_PREFIX}/libexec/lib/helpers/test-pull-main.sh"
 	test_pull_main
+	;;
+  remove-test)
+	source "${BREW_PREFIX}/libexec/lib/helpers/remove-test.sh"
+	removeTest
 	;;
   *)
     echo "Usage: pixel <command>"
