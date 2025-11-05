@@ -11,5 +11,5 @@ cwCloneMainRepo() {
 	git clone $GIT_REPO
 EOF
 
-	echo "✅ Main theme clone succesful"
+	echo "✅ Main theme clone successful"
 }

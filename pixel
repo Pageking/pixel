@@ -29,7 +29,7 @@ shift || true
 
 case "$COMMAND" in
   -v)
-    echo "Pixel CLI version 1.0.39"
+    echo "Pixel CLI version 1.1.1"
 	;;
   init)
     source "${BREW_PREFIX}/libexec/lib/init.sh"
@@ -49,6 +49,10 @@ case "$COMMAND" in
 	source "${BREW_PREFIX}/libexec/lib/helpers/sync-dev-to-test.sh"
 	sync_dev_to_test
 	;;
+  sync-dev-prod)
+	source "${BREW_PREFIX}/libexec/lib/helpers/sync-dev-to-prod.sh"
+	sync_dev_to_prod
+	;;
   test-pull-main)
 	source "${BREW_PREFIX}/libexec/lib/helpers/test-pull-main.sh"
 	test_pull_main
@@ -65,6 +69,7 @@ case "$COMMAND" in
     echo "  init-prod			Initialize production environment on Cloudways server"
 	echo "  project-name			Get the current project name based on directory structure"
 	echo "  sync-dev-test			Sync plugins and database from dev to test environment"
+	echo "  sync-dev-prod			Sync plugins and database from dev to production environment"
 	echo "  test-pull-main			Pull latest main branch on test environment"
 	echo "  remove-test				Remove test environment from Plesk server"
     ;;

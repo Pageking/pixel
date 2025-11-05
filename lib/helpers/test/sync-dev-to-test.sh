@@ -3,7 +3,7 @@ set -euo pipefail
 IFS=$'\n\t'
 
 source "$(dirname "${BASH_SOURCE[0]}")/get-credentials.sh"
-source "$(dirname "${BASH_SOURCE[0]}")/get-project-name.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/../get-project-name.sh"
 
 sync_dev_to_test() {
 	local CONFIG_PATH="$HOME/.config/pixel/config.json"

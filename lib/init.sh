@@ -33,6 +33,11 @@ MAIN_REPO=$(jq -r '.github.main_repo' "$CONFIG_PATH")
 TEMPLATE_REPO=$(jq -r '.github.template_repo' "$CONFIG_PATH")
 DEPLOY_KEY=$(ssh "$SERVER" 'cat /opt/deploy_keys/info-deploy')
 
+if [[ -z "$DEPLOY_KEY" ]]; then
+  echo "❌ Config error: Missing required GitHub or deploy key information."
+  exit 1
+fi
+
 echo "📦 Pulling '$MAIN_REPO'..."
 git clone "https://github.com/$GITHUB_ORG/$MAIN_REPO.git"
 

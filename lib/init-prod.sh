@@ -4,11 +4,11 @@ set -e
 
 source "$(dirname "${BASH_SOURCE[0]}")/helpers/check-public-folder.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/helpers/get-project-name.sh"
-source "$(dirname "${BASH_SOURCE[0]}")/helpers/get-cw-app-folder.sh"
-source "$(dirname "${BASH_SOURCE[0]}")/helpers/get-cw-bearer.sh"
-source "$(dirname "${BASH_SOURCE[0]}")/helpers/cw-generate-git-ssh.sh"
-source "$(dirname "${BASH_SOURCE[0]}")/helpers/cw-clone-project-repo.sh"
-source "$(dirname "${BASH_SOURCE[0]}")/helpers/cw-clone-main-repo.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/helpers/prod/get-cw-app-folder.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/helpers/prod/get-cw-bearer.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/helpers/prod/cw-generate-git-ssh.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/helpers/prod/cw-clone-project-repo.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/helpers/prod/cw-clone-main-repo.sh"
 check_public_folder
 get_cw_bearer
 
@@ -82,7 +82,7 @@ cwCloneProjectRepo "$ACCESS_TOKEN" "$SERVER_ID" "$APP_ID"
 cwCloneMainRepo "$SERVER_IP" "$SERVER_USER" "$SERVER_PASS" "$APP_FOLDER_NAME"
 
 read -p "Do you also want to sync the plugins and database? [y/N]: " sync_to_prod
-if [[ "$sync_plugins" =~ ^[Yy]$ ]]; then
-	source "$(dirname "${BASH_SOURCE[0]}")/helpers/sync-dev-to-prod.sh"
+if [[ "$sync_to_prod" =~ ^[Yy]$ ]]; then
+	source "$(dirname "${BASH_SOURCE[0]}")/helpers/prod/sync-dev-to-prod.sh"
 	sync_dev_to_prod "$SERVER_IP" "$SERVER_USER" "$APP_FOLDER_NAME"
 fi
