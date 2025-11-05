@@ -2,7 +2,7 @@
 IFS=$'\n'
 set -e
 
-source "$(dirname "${BASH_SOURCE[0]}")/get-project-name.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/../get-project-name.sh"
 
 cwCloneProjectRepo() {
 	local project_name=$(get_project_name)

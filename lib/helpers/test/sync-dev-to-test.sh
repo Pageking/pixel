@@ -54,6 +54,7 @@ sync_dev_to_test() {
 		echo "🔄 Syncing wp-cli.yml to server..."
 		scp wp-cli.yml ${SERVER}:/var/www/vhosts/${PROJECT_NAME}.${DOMAIN}/httpdocs/
 	fi
+	# BUG: Gives too many authentication failures
 	if [[ -f "database.sql" && -f "wp-cli.yml" && "$sync_db_to_test" =~ ^[Yy]$ ]]; then
 	sshpass -p "${PLESK_PASS}" ssh -T -o IgnoreUnknown=UseKeychain "${PLESK_USER}@${IP}" <<EOF
 	set -e
