@@ -29,7 +29,7 @@ shift || true
 
 case "$COMMAND" in
   -v)
-    echo "Pixel CLI version 1.1.1"
+    echo "Pixel CLI version 1.1.2"
 	;;
   init)
     source "${BREW_PREFIX}/libexec/lib/init.sh"
@@ -46,20 +46,40 @@ case "$COMMAND" in
 	echo "$PROJECT_NAME"
 	;;
   sync-dev-test)
-	source "${BREW_PREFIX}/libexec/lib/helpers/sync-dev-to-test.sh"
+	source "${BREW_PREFIX}/libexec/lib/helpers/test/sync-dev-to-test.sh"
 	sync_dev_to_test
 	;;
   sync-dev-prod)
-	source "${BREW_PREFIX}/libexec/lib/helpers/sync-dev-to-prod.sh"
+	source "${BREW_PREFIX}/libexec/lib/helpers/prod/sync-dev-to-prod.sh"
 	sync_dev_to_prod
 	;;
   test-pull-main)
-	source "${BREW_PREFIX}/libexec/lib/helpers/test-pull-main.sh"
+	source "${BREW_PREFIX}/libexec/lib/helpers/test/test-pull-main.sh"
 	test_pull_main
 	;;
   remove-test)
-	source "${BREW_PREFIX}/libexec/lib/helpers/remove-test.sh"
+	source "${BREW_PREFIX}/libexec/lib/helpers/test/remove-test.sh"
 	removeTest
+	;;
+  check-config)
+	source "${BREW_PREFIX}/libexec/lib/helpers/check-project-config.sh"
+	check_project_config
+	;;
+  fill-config)
+	source "${BREW_PREFIX}/libexec/lib/helpers/init/fill-project-config.sh"
+	source "${BREW_PREFIX}/libexec/lib/helpers/get-project-name.sh"
+	PROJECT_NAME=$(get_project_name)
+	fill_project_config .project_name "$PROJECT_NAME"
+	;;
+  get-config)
+	if [[ $# -ne 1 ]]; then
+		echo "❌ Usage: pixel get-config <json_path>"
+		exit 1
+	fi
+	source "${BREW_PREFIX}/libexec/lib/helpers/get-project-config.sh"
+	PARAMETER="$1"
+	RESULT=$(get_project_config "$PARAMETER")
+	echo "$RESULT"
 	;;
   *)
     echo "Usage: pixel <command>"
@@ -70,7 +90,11 @@ case "$COMMAND" in
 	echo "  project-name			Get the current project name based on directory structure"
 	echo "  sync-dev-test			Sync plugins and database from dev to test environment"
 	echo "  sync-dev-prod			Sync plugins and database from dev to production environment"
-	echo "  test-pull-main			Pull latest main branch on test environment"
-	echo "  remove-test				Remove test environment from Plesk server"
+	echo "  test-pull-main		Pull latest main branch on test environment"
+	echo "  remove-test			Remove test environment from Plesk server"
+	echo "  check-config			Check for existence of project config file"
+	echo "  fill-config			Fill in project config with default values"
+	echo "  get-config <json_path>	Get a specific value from the project config"
+	echo "  -v				Display version information"
     ;;
 esac
