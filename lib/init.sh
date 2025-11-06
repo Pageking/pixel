@@ -1,8 +1,11 @@
 #!/bin/bash
 
 source "$(dirname "${BASH_SOURCE[0]}")/helpers/check-public-folder.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/helpers/init/fill-project-config.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/helpers/get-project-name.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/helpers/check-project-config.sh"
 check_public_folder
+check_project_config
 
 PROJECT_NAME=$(get_project_name)
 if [[ ! "$PROJECT_NAME" =~ ^[a-z0-9-]+$ ]]; then
@@ -32,6 +35,8 @@ GITHUB_ORG=$(jq -r '.github.org' "$CONFIG_PATH")
 MAIN_REPO=$(jq -r '.github.main_repo' "$CONFIG_PATH")
 TEMPLATE_REPO=$(jq -r '.github.template_repo' "$CONFIG_PATH")
 DEPLOY_KEY=$(ssh "$SERVER" 'cat /opt/deploy_keys/info-deploy')
+
+fill_project_config .project_name "$PROJECT_NAME"
 
 echo "📦 Pulling '$MAIN_REPO'..."
 git clone "https://github.com/$GITHUB_ORG/$MAIN_REPO.git"

@@ -99,6 +99,6 @@ fi
 
 read -p "Do you also want to sync the plugins and database? [y/N]: " sync_plugins
 if [[ "$sync_plugins" =~ ^[Yy]$ ]]; then
-	source "$(dirname "${BASH_SOURCE[0]}")/helpers/sync-dev-to-test.sh"
+	source "$(dirname "${BASH_SOURCE[0]}")/helpers/test/sync-dev-to-test.sh"
 	sync_dev_to_test "$PROJECT_NAME"
 fi

@@ -3,7 +3,7 @@ set -euo pipefail
 IFS=$'\n\t'
 
 source "$(dirname "${BASH_SOURCE[0]}")/get-credentials.sh"
-source "$(dirname "${BASH_SOURCE[0]}")/get-project-name.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/../get-project-name.sh"
 
 sync_dev_to_test() {
 	local CONFIG_PATH="$HOME/.config/pixel/config.json"
@@ -54,6 +54,7 @@ sync_dev_to_test() {
 		echo "🔄 Syncing wp-cli.yml to server..."
 		scp wp-cli.yml ${SERVER}:/var/www/vhosts/${PROJECT_NAME}.${DOMAIN}/httpdocs/
 	fi
+	# BUG: Gives too many authentication failures
 	if [[ -f "database.sql" && -f "wp-cli.yml" && "$sync_db_to_test" =~ ^[Yy]$ ]]; then
 	sshpass -p "${PLESK_PASS}" ssh -T -o IgnoreUnknown=UseKeychain "${PLESK_USER}@${IP}" <<EOF
 	set -e
