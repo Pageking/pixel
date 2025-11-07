@@ -3,7 +3,7 @@ IFS=$'\n'
 set -e
 
 source "$(dirname "${BASH_SOURCE[0]}")/get-credentials.sh"
-source "$(dirname "${BASH_SOURCE[0]}")/../get-project-name.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/env/get-github-var.sh"
 
 test_pull_main() {
   	local CONFIG_PATH="$HOME/.config/pixel/config.json"
@@ -25,7 +25,7 @@ test_pull_main() {
 
 	# --- Project name ---
 	local PROJECT_NAME
-	PROJECT_NAME=$(get_project_name)
+	PROJECT_NAME=$(get_github_var "PROJECT_NAME")
 	if [[ -z "$PROJECT_NAME" ]]; then
 		echo "❌ Could not determine project name"
 		exit 1

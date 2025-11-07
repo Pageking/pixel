@@ -40,11 +40,6 @@ case "$COMMAND" in
   init-prod)
 	source "${BREW_PREFIX}/libexec/lib/init-prod.sh"
 	;;
-  project-name)
-	source "${BREW_PREFIX}/libexec/lib/helpers/get-project-name.sh"
-	PROJECT_NAME=$(get_project_name)
-	echo "$PROJECT_NAME"
-	;;
   sync-dev-test)
 	source "${BREW_PREFIX}/libexec/lib/helpers/test/sync-dev-to-test.sh"
 	sync_dev_to_test
@@ -61,40 +56,27 @@ case "$COMMAND" in
 	source "${BREW_PREFIX}/libexec/lib/helpers/test/remove-test.sh"
 	removeTest
 	;;
-  check-config)
-	source "${BREW_PREFIX}/libexec/lib/helpers/check-project-config.sh"
-	check_project_config
-	;;
-  fill-config)
-	source "${BREW_PREFIX}/libexec/lib/helpers/init/fill-project-config.sh"
-	source "${BREW_PREFIX}/libexec/lib/helpers/get-project-name.sh"
-	PROJECT_NAME=$(get_project_name)
-	fill_project_config .project_name "$PROJECT_NAME"
-	;;
-  get-config)
+  get-github-var)
 	if [[ $# -ne 1 ]]; then
-		echo "❌ Usage: pixel get-config <json_path>"
+		echo "❌ Usage: pixel get-github-var <variable_name>"
 		exit 1
 	fi
-	source "${BREW_PREFIX}/libexec/lib/helpers/get-project-config.sh"
-	PARAMETER="$1"
-	RESULT=$(get_project_config "$PARAMETER")
+	source "${BREW_PREFIX}/libexec/lib/helpers/env/get-github-var.sh"
+	VAR_NAME="$1"
+	RESULT=$(get_github_var "$VAR_NAME")
 	echo "$RESULT"
 	;;
   *)
     echo "Usage: pixel <command>"
     echo "Commands:"
-    echo "  init				Initialize GitHub repo + dev environment"
-    echo "  init-test			Initialize test environment on Plesk server"
-    echo "  init-prod			Initialize production environment on Cloudways server"
-	echo "  project-name			Get the current project name based on directory structure"
-	echo "  sync-dev-test			Sync plugins and database from dev to test environment"
-	echo "  sync-dev-prod			Sync plugins and database from dev to production environment"
-	echo "  test-pull-main		Pull latest main branch on test environment"
-	echo "  remove-test			Remove test environment from Plesk server"
-	echo "  check-config			Check for existence of project config file"
-	echo "  fill-config			Fill in project config with default values"
-	echo "  get-config <json_path>	Get a specific value from the project config"
-	echo "  -v				Display version information"
+    echo "  init						Initialize GitHub repo + dev environment"
+    echo "  init-test					Initialize test environment on Plesk server"
+    echo "  init-prod					Initialize production environment on Cloudways server"
+	echo "  sync-dev-test					Sync plugins and database from dev to test environment"
+	echo "  sync-dev-prod					Sync plugins and database from dev to production environment"
+	echo "  test-pull-main				Pull latest main branch on test environment"
+	echo "  remove-test					Remove test environment from Plesk server"
+	echo "  get-github-var <variable_name>		Get a GitHub Actions variable from the project repo"
+	echo "  -v						Display version information"
     ;;
 esac
