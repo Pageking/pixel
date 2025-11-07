@@ -2,7 +2,7 @@
 IFS=$'\n'
 set -e
 
-source "$(dirname "${BASH_SOURCE[0]}")/../get-project-config.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/../env/get-github-var.sh"
 
 cwCloneProjectRepo() {
 	if [[ $# -ne 1 ]]; then
@@ -10,9 +10,9 @@ cwCloneProjectRepo() {
         exit 1
     fi
 	local PROJECT_NAME SERVER_ID APP_ID
-	PROJECT_NAME=$(get_project_config .project_name)
-	SERVER_ID=$(get_project_config .cloudways.server_id)
-	APP_ID=$(get_project_config .cloudways.app_id)
+	PROJECT_NAME=$(get_github_var "PROJECT_NAME")
+	SERVER_ID=$(get_github_var "CLOUDWAYS_SERVER_ID")
+	APP_ID=$(get_github_var "CLOUDWAYS_APP_ID")
 
 	CW_CLONE_THEME=$(curl -s -X POST "https://api.cloudways.com/api/v1/git/clone" \
 	-H "Authorization: Bearer $1" \

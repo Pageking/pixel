@@ -11,13 +11,6 @@
 			"server": "test@123.123.123.100",
             "ip": "123.123.123.100",
 			"www_root": "httpdocs"
-        },
-        "server_2": {
-			"label": "",
-            "domain": "",
-			"server": "test@123.123.123.100",
-            "ip": "123.123.123.101",
-			"www_root": "httpdocs"
         }
     },
 	"wp": {
@@ -25,5 +18,9 @@
 		"admin_password": "",
 		"admin_email": "",
 		"db_prefix": "wp"
+	},
+	"cw" : {
+		"email": "",
+		"api_key": ""
 	}
 }

@@ -1,6 +1,9 @@
 #!/bin/bash
+IFS=$'\n'
+set -e
+
 source "$(dirname "${BASH_SOURCE[0]}")/helpers/check-public-folder.sh"
-source "$(dirname "${BASH_SOURCE[0]}")/helpers/get-project-name.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/helpers/env/get-github-var.sh"
 check_public_folder
 
 # === CONFIGURATION ===
@@ -15,11 +18,12 @@ WP_ADMIN_EMAIL=$(jq -r '.wp.admin_email' "$CONFIG_PATH")
 
 WWW_ROOT=$(jq -r '.servers.server_1.www_root' "$CONFIG_PATH")
 
-PROJECT_NAME=$(get_project_name)
+PROJECT_NAME=$(get_github_var "PROJECT_NAME")
 if [[ ! "$PROJECT_NAME" =~ ^[a-z0-9-]+$ ]]; then
   echo "Invalid project name. Use only lowercase letters, numbers, and hyphens (no spaces or special characters)."
   exit 1
 fi
+
 DB_NAME="${PROJECT_NAME}"
 DB_USER="${DB_NAME}_user"
 DB_PASS="$(openssl rand -base64 12)"
@@ -27,7 +31,7 @@ DB_PASS="$(openssl rand -base64 12)"
 GIT_REPO="git@github.com-info:$(jq -r '.github.org' "$CONFIG_PATH")/pk-theme.git"
 TARGET_DIR="/var/www/vhosts/${PROJECT_NAME}.${DOMAIN}/${WWW_ROOT}/wp-content/themes"
 
-SUFFIX=$(LC_ALL=C tr -dc a-z0-9 </dev/urandom | head -c 10)
+SUFFIX=$(openssl rand -hex 5)
 PLESK_USER="${DOMAIN}_${SUFFIX}"
 PLESK_PASS=$(openssl rand -base64 16)
 
@@ -97,7 +101,7 @@ else
 	echo "⚠️ No wp-cli.yml file found in the current folder. Skipping wp-cli.yml upload."
 fi
 
-read -p "Do you also want to sync the plugins and database? [y/N]: " sync_plugins
+read -p "Do you also want to sync the plugins and/or the database? [y/N]: " sync_plugins
 if [[ "$sync_plugins" =~ ^[Yy]$ ]]; then
 	source "$(dirname "${BASH_SOURCE[0]}")/helpers/test/sync-dev-to-test.sh"
 	sync_dev_to_test "$PROJECT_NAME"

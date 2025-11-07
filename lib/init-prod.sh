@@ -2,16 +2,15 @@
 IFS=$'\n'
 set -e
 
-source "$(dirname "${BASH_SOURCE[0]}")/helpers/init/fill-project-config.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/helpers/env/get-github-var.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/helpers/env/set-github-var.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/helpers/check-public-folder.sh"
-source "$(dirname "${BASH_SOURCE[0]}")/helpers/check-project-config.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/helpers/get-project-name.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/helpers/prod/get-cw-app-folder.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/helpers/prod/get-cw-bearer.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/helpers/prod/cw-generate-git-ssh.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/helpers/prod/cw-clone-project-repo.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/helpers/prod/cw-clone-main-repo.sh"
-check_project_config
 check_public_folder
 get_cw_bearer
 
@@ -78,11 +77,12 @@ echo "✅ New app created successfully with ID: $APP_ID"
 getAppFolder "$ACCESS_TOKEN" "$SERVER_ID" "$APP_ID"
 echo "App folder name: $APP_FOLDER_NAME"
 
-fill_project_config .cloudways.server_id "$SERVER_ID"
-fill_project_config .cloudways.server_ip "$SERVER_IP"
-fill_project_config .cloudways.server_label "$SERVER_LABEL"
-fill_project_config .cloudways.app_id "$APP_ID"
-fill_project_config .cloudways.app_folder "$APP_FOLDER_NAME"
+set_github_var "CLOUDWAYS_APP_FOLDER" "$APP_FOLDER_NAME"
+set_github_var "CLOUDWAYS_SERVER_IP" "$SERVER_IP"
+set_github_var "CLOUDWAYS_SERVER_ID" "$SERVER_ID"
+set_github_var "CLOUDWAYS_SERVER_USER" "$SERVER_USER"
+set_github_var "CLOUDWAYS_SERVER_LABEL" "$SERVER_LABEL"
+set_github_var "CLOUDWAYS_APP_ID" "$APP_ID"
 
 cwGenerateGitSSH "$ACCESS_TOKEN"
 
@@ -93,5 +93,5 @@ cwCloneMainRepo "$SERVER_USER"
 read -p "Do you also want to sync the plugins and database? [y/N]: " sync_to_prod
 if [[ "$sync_to_prod" =~ ^[Yy]$ ]]; then
 	source "$(dirname "${BASH_SOURCE[0]}")/helpers/prod/sync-dev-to-prod.sh"
-	sync_dev_to_prod "$SERVER_IP" "$SERVER_USER" "$APP_FOLDER_NAME"
+	sync_dev_to_prod
 fi
