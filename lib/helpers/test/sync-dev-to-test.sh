@@ -35,22 +35,24 @@ sync_dev_to_test() {
 
 	read -p "Sync the plugins? [y/N]: " sync_plugins_to_test
 	if [[ "$sync_plugins_to_test" =~ ^[Yy]$ ]]; then
-		rsync -avzh --progress --delete-after --update "wp-content/plugins" ${SERVER}:/var/www/vhosts/${PROJECT_NAME}.${DOMAIN}/httpdocs/wp-content/
+		rsync -avzh --progress --delete-after --update -- "wp-content/plugins" ${SERVER}:/var/www/vhosts/${PROJECT_NAME}.${DOMAIN}/httpdocs/wp-content/
+		ssh ${SERVER} "chown -R ${PLESK_USER}:psacln /var/www/vhosts/${PROJECT_NAME}.${DOMAIN}/httpdocs/wp-content/plugins"
 		echo "✅ Plugins synchronized"
 	fi
 
 	read -p "Sync the uploads folder (media files)? [y/N]: " sync_media_to_test
 	if [[ "$sync_media_to_test" =~ ^[Yy]$ ]]; then
 		rsync -avzh --progress --delete-after --update "wp-content/uploads" ${SERVER}:/var/www/vhosts/${PROJECT_NAME}.${DOMAIN}/httpdocs/wp-content/
+		ssh ${SERVER} "chown -R ${PLESK_USER}:psacln /var/www/vhosts/${PROJECT_NAME}.${DOMAIN}/httpdocs/wp-content/uploads"
 		echo "✅ Uploads synchronized"
 	fi
 
 	read -p "Sync the database? [y/N]: " sync_db_to_test
-	if [[ -f "database.sql" ]]; then
+	if [[ -f "database.sql" && "$sync_db_to_test" =~ ^[Yy]$ ]]; then
 		echo "🔄 Syncing database.sql to server..."
 		scp database.sql ${SERVER}:/var/www/vhosts/${PROJECT_NAME}.${DOMAIN}/httpdocs/
 	fi
-	if [[ -f "wp-cli.yml" ]]; then
+	if [[ -f "wp-cli.yml" && "$sync_db_to_test" =~ ^[Yy]$ ]]; then
 		echo "🔄 Syncing wp-cli.yml to server..."
 		scp wp-cli.yml ${SERVER}:/var/www/vhosts/${PROJECT_NAME}.${DOMAIN}/httpdocs/
 	fi
