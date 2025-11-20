@@ -4,7 +4,7 @@ IFS=$'\n\t'
 
 source "$(dirname "${BASH_SOURCE[0]}")/get-github-var.sh"
 
-set_github_var() {
+set_github_secret() {
 	if [[ $# -ne 2 ]]; then
         echo "❌ Usage: set_github_var <variable_name> <value>"
         exit 1
