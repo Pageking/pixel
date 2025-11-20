@@ -4,6 +4,7 @@ set -e
 
 source "$(dirname "${BASH_SOURCE[0]}")/helpers/env/get-github-var.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/helpers/env/set-github-var.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/helpers/env/set-github-secret.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/helpers/check-public-folder.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/helpers/get-project-name.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/helpers/prod/get-cw-app-folder.sh"
@@ -76,6 +77,10 @@ echo "✅ New app created successfully with ID: $APP_ID"
 
 getAppFolder "$ACCESS_TOKEN" "$SERVER_ID" "$APP_ID"
 echo "App folder name: $APP_FOLDER_NAME"
+
+CONFIG_PATH="$HOME/.config/pixel/config.json"
+CLOUDWAYS_API_KEY=$(jq -r '.cw.api_key' "$CONFIG_PATH")
+set_github_secret "CLOUDWAYS_API_KEY" "$CLOUDWAYS_API_KEY"
 
 set_github_var "CLOUDWAYS_APP_FOLDER" "$APP_FOLDER_NAME"
 set_github_var "CLOUDWAYS_SERVER_IP" "$SERVER_IP"
