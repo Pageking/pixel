@@ -3,7 +3,7 @@ IFS=$'\n'
 set -e
 
 source "$(dirname "${BASH_SOURCE[0]}")/get-credentials.sh"
-source "$(dirname "${BASH_SOURCE[0]}")/env/get-github-var.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/../env/get-github-var.sh"
 
 test_pull_main() {
   	local CONFIG_PATH="$HOME/.config/pixel/config.json"
