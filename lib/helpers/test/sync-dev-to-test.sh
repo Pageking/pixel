@@ -48,13 +48,21 @@ sync_dev_to_test() {
 	fi
 
 	read -p "Sync the database? [y/N]: " sync_db_to_test
-	if [[ -f "database.sql" && "$sync_db_to_test" =~ ^[Yy]$ ]]; then
-		echo "🔄 Syncing database.sql to server..."
-		scp database.sql ${SERVER}:/var/www/vhosts/${PROJECT_NAME}.${DOMAIN}/httpdocs/
-	fi
-	if [[ -f "wp-cli.yml" && "$sync_db_to_test" =~ ^[Yy]$ ]]; then
-		echo "🔄 Syncing wp-cli.yml to server..."
-		scp wp-cli.yml ${SERVER}:/var/www/vhosts/${PROJECT_NAME}.${DOMAIN}/httpdocs/
+	if [[ "$sync_db_to_test" =~ ^[Yy]$ ]]; then
+		if [[ -f "database.sql" ]]; then
+			echo "🔄 Syncing database.sql to server..."
+			scp database.sql ${SERVER}:/var/www/vhosts/${PROJECT_NAME}.${DOMAIN}/httpdocs/
+		else 
+			echo "⚠️ No database.sql file found in the current folder. Skipping database sync."
+			exit 0
+		fi
+		if [[ -f "wp-cli.yml" ]]; then
+			echo "🔄 Syncing wp-cli.yml to server..."
+			scp wp-cli.yml ${SERVER}:/var/www/vhosts/${PROJECT_NAME}.${DOMAIN}/httpdocs/
+		else
+			echo "⚠️ No wp-cli.yml file found in the current folder. Skipping wp-cli.yml sync."
+			exit 0
+		fi
 	fi
 	# BUG: Gives too many authentication failures
 	if [[ -f "database.sql" && -f "wp-cli.yml" && "$sync_db_to_test" =~ ^[Yy]$ ]]; then
@@ -73,6 +81,6 @@ sync_dev_to_test() {
 EOF
 		echo "✅ Database imported"
 	else
-		echo "⚠️ No database.sql file found in the current folder. Skipping database import."
+		echo "⚠️ Skipping database import due to missing files or user choice."
 	fi
 }
