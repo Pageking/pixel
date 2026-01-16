@@ -23,7 +23,7 @@ copy that config.json. It can be located at `~/.config/pixel/config.json`
 
 ##  Initializing a project
 
-If this is a new project you're working on, always start by creating a site with the most current blueprint. 
+If this is a new project you're working on, always start by creating a site with the most current blueprint. You can find the ziped blueprints here: https://drive.google.com/drive/folders/1HkAeqjd-BsY8hgITraNM5OXNHbeZfGGC?usp=share_link.
 
 When your new project in LocalWP is created, open your terminal and navigate to the project's folder. When you're in the `/app/public/` folder, type:
 
