@@ -71,7 +71,7 @@ sync_dev_to_test() {
 	bash -lc '
 		cd httpdocs
 		wp db import database.sql
-		wp search-replace '${PROJECT_NAME}.local' '${PROJECT_NAME}.${DOMAIN}'
+		wp search-replace '${PROJECT_NAME}.local' '${PROJECT_NAME}.${DOMAIN}' --all-tables
 
 		wp rewrite flush --hard
 		wp cache flush
