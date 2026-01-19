@@ -29,7 +29,7 @@ shift || true
 
 case "$COMMAND" in
   -v)
-    echo "Pixel CLI version 1.1.5"
+    echo "Pixel CLI version 1.1.6"
 	;;
   init)
     source "${BREW_PREFIX}/libexec/lib/init.sh"
