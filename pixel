@@ -29,7 +29,7 @@ shift || true
 
 case "$COMMAND" in
   -v)
-    echo "Pixel CLI version 1.1.6"
+    echo "Pixel CLI version 1.1.7"
 	;;
   init)
     source "${BREW_PREFIX}/libexec/lib/init.sh"
@@ -43,6 +43,10 @@ case "$COMMAND" in
   sync-dev-test)
 	source "${BREW_PREFIX}/libexec/lib/helpers/test/sync-dev-to-test.sh"
 	sync_dev_to_test
+	;;
+  sync-test-dev)
+	source "${BREW_PREFIX}/libexec/lib/helpers/test/sync-test-to-dev.sh"
+	sync_test_to_dev
 	;;
   sync-dev-prod)
 	source "${BREW_PREFIX}/libexec/lib/helpers/prod/sync-dev-to-prod.sh"
