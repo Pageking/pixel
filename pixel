@@ -28,8 +28,8 @@ COMMAND=$1
 shift || true
 
 case "$COMMAND" in
-  -v)
-    echo "Pixel CLI version 1.1.6"
+  -v|--version)
+    echo "Pixel CLI version 1.1.7"
 	;;
   init)
     source "${BREW_PREFIX}/libexec/lib/init.sh"
@@ -40,11 +40,15 @@ case "$COMMAND" in
   init-prod)
 	source "${BREW_PREFIX}/libexec/lib/init-prod.sh"
 	;;
-  sync-dev-test)
+  sync-dev-to-test|sync-dev-test)
 	source "${BREW_PREFIX}/libexec/lib/helpers/test/sync-dev-to-test.sh"
 	sync_dev_to_test
 	;;
-  sync-dev-prod)
+  sync-test-to-dev|sync-test-dev)
+	source "${BREW_PREFIX}/libexec/lib/helpers/test/sync-test-to-dev.sh"
+	sync_test_to_dev
+	;;
+  sync-dev-to-prod|sync-dev-prod)
 	source "${BREW_PREFIX}/libexec/lib/helpers/prod/sync-dev-to-prod.sh"
 	sync_dev_to_prod
 	;;
@@ -68,15 +72,21 @@ case "$COMMAND" in
 	;;
   *)
     echo "Usage: pixel <command>"
-    echo "Commands:"
-    echo "  init						Initialize GitHub repo + dev environment"
-    echo "  init-test					Initialize test environment on Plesk server"
-    echo "  init-prod					Initialize production environment on Cloudways server"
-	echo "  sync-dev-test					Sync plugins and database from dev to test environment"
-	echo "  sync-dev-prod					Sync plugins and database from dev to production environment"
-	echo "  test-pull-main				Pull latest main branch on test environment"
-	echo "  remove-test					Remove test environment from Plesk server"
-	echo "  get-github-var <variable_name>		Get a GitHub Actions variable from the project repo"
-	echo "  -v						Display version information"
+	echo ""
+    echo "Initialize Commands:"
+    echo "    init					Initialize GitHub repo + dev environment"
+    echo "    init-test					Initialize test environment on Plesk server"
+    echo "    init-prod					Initialize production environment on Cloudways server"
+	echo ""
+	echo "Sync Commands:"
+	echo "    sync-dev-to-test				Sync plugins and database from dev to test environment"
+	echo "    sync-test-to-dev				Sync plugins and database from test to dev environment"
+	echo "    sync-dev-to-prod				Sync plugins and database from dev to production environment"
+	echo "    test-pull-main				Pull latest main branch on test environment"
+	echo ""
+	echo "Management Commands:"
+	echo "    remove-test					Remove test environment from Plesk server"
+	echo "    get-github-var <variable_name>		Get a GitHub Actions variable from the project repo"
+	echo "    -v (--version)				Display version information"
     ;;
 esac
