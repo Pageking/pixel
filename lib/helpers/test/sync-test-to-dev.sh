@@ -68,6 +68,8 @@ EOF
 
 		wp db import database.sql
 		wp search-replace "${PROJECT_NAME}.${DOMAIN}" "${PROJECT_NAME}.local" --all-tables
+		wp rewrite flush --hard
+		wp cache flush
 		rm database.sql
 		echo "✅ Database synchronized"
 	fi
