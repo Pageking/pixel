@@ -1,5 +1,3 @@
-#!/bin/bash
-set -euo pipefail
 IFS=$'\n\t'
 
 check_project_config() {

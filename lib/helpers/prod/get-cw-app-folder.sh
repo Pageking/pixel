@@ -1,6 +1,4 @@
-#!/bin/bash
 IFS=$'\n'
-set -e
 
 getAppFolder() {
 	local SERVER_LIST=$(curl -s GET "https://api.cloudways.com/api/v1/server" \

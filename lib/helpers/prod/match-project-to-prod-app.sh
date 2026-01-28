@@ -1,6 +1,4 @@
-#!/bin/bash
 IFS=$'\n'
-set -e
 
 source "$(dirname "${BASH_SOURCE[0]}")/../check-public-folder.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/../get-project-name.sh"

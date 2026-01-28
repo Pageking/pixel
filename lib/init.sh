@@ -1,5 +1,3 @@
-#!/bin/bash
-
 source "$(dirname "${BASH_SOURCE[0]}")/helpers/check-public-folder.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/helpers/get-project-name.sh"
 check_public_folder

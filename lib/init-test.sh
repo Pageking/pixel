@@ -1,6 +1,4 @@
-#!/bin/bash
 IFS=$'\n'
-set -e
 
 source "$(dirname "${BASH_SOURCE[0]}")/helpers/check-public-folder.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/helpers/env/get-github-var.sh"
@@ -60,7 +58,7 @@ else
 fi
 
 echo "👷 Creating domain on Plesk with project name '$PROJECT_NAME'"
-ssh -o IgnoreUnknown=UseKeychain "$SERVER" bash <<EOF
+ssh -o IgnoreUnknown=UseKeychain "$SERVER" bash <<'EOF'
 # Exit on first failure
 set -e 
 
@@ -101,7 +99,7 @@ else
 	echo "⚠️ No wp-cli.yml file found in the current folder. Skipping wp-cli.yml upload."
 fi
 
-read -p "Do you also want to sync the plugins and/or the database? [y/N]: " sync_plugins
+read -rp "Do you also want to sync the plugins and/or the database? [y/N]: " sync_plugins
 if [[ "$sync_plugins" =~ ^[Yy]$ ]]; then
 	source "$(dirname "${BASH_SOURCE[0]}")/helpers/test/sync-dev-to-test.sh"
 	sync_dev_to_test "$PROJECT_NAME"

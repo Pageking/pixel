@@ -1,6 +1,4 @@
-#!/bin/bash
 IFS=$'\n'
-set -e
 
 source "$(dirname "${BASH_SOURCE[0]}")/get-credentials.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/../env/get-github-var.sh"

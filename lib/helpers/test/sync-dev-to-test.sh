@@ -1,5 +1,3 @@
-#!/bin/bash
-set -euo pipefail
 IFS=$'\n\t'
 
 source "$(dirname "${BASH_SOURCE[0]}")/get-credentials.sh"

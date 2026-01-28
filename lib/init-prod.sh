@@ -1,6 +1,4 @@
-#!/bin/bash
 IFS=$'\n'
-set -e
 
 source "$(dirname "${BASH_SOURCE[0]}")/helpers/env/get-github-var.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/helpers/env/set-github-var.sh"
