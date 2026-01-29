@@ -1,6 +1,6 @@
 source "$(dirname "${BASH_SOURCE[0]}")/../../helpers/env/get-github-var.sh"
 
-sync_dev_to_test() {
+sync_test_to_dev() {
 	local MDB_CONN_STRING
 	MDB_CONN_STRING=$(get_github_var "WPM_TEST_CONNECTION_STRING")
 
