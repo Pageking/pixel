@@ -1,76 +1,22 @@
-#!/bin/bash
-set -euo pipefail
-IFS=$'\n\t'
+source "$(dirname "${BASH_SOURCE[0]}")/../../helpers/env/get-github-var.sh"
 
-source "$(dirname "${BASH_SOURCE[0]}")/get-credentials.sh"
-source "$(dirname "${BASH_SOURCE[0]}")/../get-project-name.sh"
+sync_dev_to_test() {
+	local MDB_CONN_STRING
+	MDB_CONN_STRING=$(get_github_var "WPM_TEST_CONNECTION_STRING")
 
-sync_test_to_dev() {
-	local CONFIG_PATH="$HOME/.config/pixel/config.json"
-	
-	# --- Load config safely ---
-	local SERVER DOMAIN IP
-	SERVER=$(jq -r '.servers.server_1.server' "$CONFIG_PATH")
-	DOMAIN=$(jq -r '.servers.server_1.domain' "$CONFIG_PATH")
-	IP=$(jq -r '.servers.server_1.ip' "$CONFIG_PATH")
-
-	# --- Validate config ---
-	for var in SERVER DOMAIN IP; do
-		if [[ -z "${!var}" || "${!var}" == "null" ]]; then
-			echo "❌ Config error: $var is empty"
-			exit 1
+	if [[ -z "$MDB_CONN_STRING" ]]; then
+		read -rp "WPM_TEST_CONNECTION_STRING is empty, paste the test connection string:" migrate_connection_string
+		if [[ -z "$migrate_connection_string" ]]; then
+			echo "⚠️ No connection string provided. Skipping GitHub secret update."
+		else
+			source "$(dirname "${BASH_SOURCE[0]}")/../../helpers/env/set-github-var.sh"
+			echo "💾 Saving connection string to GitHub secret..."
+			set_github_var "WPM_TEST_CONNECTION_STRING" "$migrate_connection_string"
+			echo "✅ Connection string saved to GitHub secret"
+			MDB_CONN_STRING=$(get_github_var "WPM_TEST_CONNECTION_STRING")
 		fi
-	done
-
- 	# --- Project name ---
-	local PROJECT_NAME
-	PROJECT_NAME=$(get_project_name)
-	if [[ -z "$PROJECT_NAME" ]]; then
-		echo "❌ Could not determine project name"
-		exit 1
 	fi
 
-	# --- Credentials ---
-	get_plesk_credentials "$PROJECT_NAME" "$DOMAIN" || { echo "Failed to get Plesk credentials"; return 1; }
-
-	read -p "Sync the plugins? [y/N]: " sync_plugins_from_test
-	if [[ "$sync_plugins_from_test" =~ ^[Yy]$ ]]; then
-		rsync -avzhq --delete-after --update ${SERVER}:/var/www/vhosts/${PROJECT_NAME}.${DOMAIN}/httpdocs/wp-content/plugins/ "wp-content/plugins/"
-		echo "✅ Plugins synchronized"
-	fi
-
-	read -p "Sync the uploads folder (media files)? [y/N]: " sync_media_from_test
-	if [[ "$sync_media_from_test" =~ ^[Yy]$ ]]; then
-		rsync -avzhq --delete-after --update ${SERVER}:/var/www/vhosts/${PROJECT_NAME}.${DOMAIN}/httpdocs/wp-content/uploads/ "wp-content/uploads/"
-		echo "✅ Uploads synchronized"
-	fi
-
-	read -p "Sync the database? [y/N]: " sync_db_to_test
-	if [[ "$sync_db_to_test" =~ ^[Yy]$ ]]; then
-	sshpass -p "${PLESK_PASS}" ssh -T -o IgnoreUnknown=UseKeychain "${PLESK_USER}@${IP}" <<EOF
-	set -e
-	bash -lc '
-		cd httpdocs
-		wp db export database.sql
-		exit
-	'
-EOF
-		rsync -avzhq --update ${SERVER}:/var/www/vhosts/${PROJECT_NAME}.${DOMAIN}/httpdocs/database.sql ./database.sql
-
-	sshpass -p "${PLESK_PASS}" ssh -T -o IgnoreUnknown=UseKeychain "${PLESK_USER}@${IP}" <<EOF
-	set -e
-	bash -lc '
-		cd httpdocs
-		rm database.sql
-		exit
-	'
-EOF
-
-		wp db import database.sql
-		wp search-replace "${PROJECT_NAME}.${DOMAIN}" "${PROJECT_NAME}.local" --all-tables
-		wp rewrite flush --hard
-		wp cache flush
-		rm database.sql
-		echo "✅ Database synchronized"
-	fi
+	echo "🔃 Syncing uploads/media/database to test"
+	eval "wp migratedb pull $MDB_CONN_STRING --plugin-files=all --media=all"
 }
