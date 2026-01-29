@@ -1,9 +1,10 @@
 #!/bin/bash
 IFS=$'\n'
-set -e
+set -eou pipefail
 
 source "$(dirname "${BASH_SOURCE[0]}")/helpers/check-public-folder.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/helpers/env/get-github-var.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/helpers/env/set-github-var.sh"
 check_public_folder
 
 # === CONFIGURATION ===
@@ -101,8 +102,30 @@ else
 	echo "⚠️ No wp-cli.yml file found in the current folder. Skipping wp-cli.yml upload."
 fi
 
-read -p "Do you also want to sync the plugins and/or the database? [y/N]: " sync_plugins
-if [[ "$sync_plugins" =~ ^[Yy]$ ]]; then
+echo "🔄 Syncing wp-migrate-db-pro plugin to server..."
+rsync -ravz "wp-content/plugins/wp-migrate-db-pro/" "${SERVER}:/var/www/vhosts/${PROJECT_NAME}.${DOMAIN}/httpdocs/wp-content/plugins/wp-migrate-db-pro/"
+
+# FIX: Change to 1Password dev team account
+sshpass -p "${PLESK_PASS}" ssh -T -o IgnoreUnknown=UseKeychain "${PLESK_USER}@${IP}" <<EOF
+	set -e
+	bash -lc '
+		cd httpdocs
+		wp user create support support@pageking.nl --user_pass="EQtyQAxpTNPEqLCqEs4epW9h" --role="administrator" --porcelain
+		wp plugin activate wp-migrate-db-pro
+	'
+EOF
+
+read -rp "Paste the wp-migrate-db-pro connection string: " migrate_connection_string
+if [[ -z "$migrate_connection_string" ]]; then
+	echo "⚠️ No connection string provided. Skipping GitHub secret update."
+else
+	echo "💾 Saving connection string to GitHub secret..."
+	set_github_var "WP_MIGRATE_CONNECTION_STRING" "$migrate_connection_string"
+	echo "✅ Connection string saved to GitHub secret"
+fi
+
+read -rp "Do you want to sync the database/media/uploads to this test environment?" sync_to_test
+if [[ "$sync_to_test" =~ ^[Yy]$ ]]; then
 	source "$(dirname "${BASH_SOURCE[0]}")/helpers/test/sync-dev-to-test.sh"
-	sync_dev_to_test "$PROJECT_NAME"
+	sync_dev_to_test
 fi
