@@ -2,7 +2,7 @@ source "${BREW_PREFIX}/libexec/lib/helpers/env/get-github-var.sh"
 
 sync_prod_to_dev() {
 	read -rp "Are you sure you want to sync from the production server? [y/N]" sync_from_prod
-	if [[ "$sync_from_prod" != ^[Yy]$ ]]; then
+	if [[ "$sync_from_prod" != "Y" ]] && [[ "$sync_from_prod" != "y" ]]; then
 		echo "Oké dan niet hè."
 		exit 0
 	fi
