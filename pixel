@@ -29,7 +29,7 @@ shift || true
 
 case "$COMMAND" in
   -v|--version)
-    echo "Pixel CLI version 1.2.2"
+    echo "Pixel CLI version 1.2.3"
 	;;
   init)
     source "${BREW_PREFIX}/libexec/lib/init.sh"
@@ -46,7 +46,7 @@ case "$COMMAND" in
 	;;
   sync-test-to-dev|sync-test-dev)
 	source "${BREW_PREFIX}/libexec/lib/helpers/test/sync-test-to-dev.sh"
-	sync_test_to_dev
+	sync_test_to_dev "$@"
 	;;
   sync-dev-to-prod|sync-dev-prod)
 	source "${BREW_PREFIX}/libexec/lib/helpers/prod/sync-dev-to-prod.sh"
@@ -86,9 +86,16 @@ case "$COMMAND" in
 	echo "    sync-dev-to-test				Sync plugins and database from dev to test environment"
 	echo "    sync-test-to-dev				Sync plugins and database from test to dev environment"
 	echo "    sync-dev-to-prod				Sync plugins and database from dev to production environment"
-	echo "    test-pull-main				Pull latest main branch on test environment"
+	echo "    sync-prod-to-dev				Sync plugins and database from dev to production environment"
+	echo ""
+	echo "All sync commands can be used with the following flags:"
+	echo "    --no-database          			Skip database synchronization"
+	echo "    --no-plugins           			Skip plugin synchronization"
+	echo "    --no-media             			Skip uploads/media synchronization"
+	echo ""
 	echo ""
 	echo "Management Commands:"
+	echo "    test-pull-main				Pull latest main branch on test environment"
 	echo "    remove-test					Remove test environment from Plesk server"
 	echo "    get-github-var <variable_name>		Get a GitHub Actions variable from the project repo"
 	echo "    -v (--version)				Display version information"
