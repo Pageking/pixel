@@ -2,7 +2,7 @@
 IFS=$'\n'
 set -e
 
-source "$(dirname "${BASH_SOURCE[0]}")/../env/get-github-var.sh"
+source "${BREW_PREFIX}/libexec/lib/helpers/env/get-github-var.sh"
 
 cwGenerateGitSSH() {
 	local CONFIG_PATH GITHUB_ORG PROJECT_NAME SERVER_LABEL SERVER_ID APP_ID

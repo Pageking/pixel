@@ -1,4 +1,4 @@
-source "$(dirname "${BASH_SOURCE[0]}")/../get-project-name.sh"
+source "${BREW_PREFIX}/libexec/lib/helpers/get-project-name.sh"
 get_plesk_credentials() {
   CONFIG_PATH="$HOME/.config/pixel/config.json"
   local project_name=$(get_project_name)

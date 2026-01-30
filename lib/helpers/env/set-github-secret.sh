@@ -2,7 +2,7 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-source "$(dirname "${BASH_SOURCE[0]}")/get-github-var.sh"
+source "${BREW_PREFIX}/libexec/lib/helpers/env/get-github-var.sh"
 
 set_github_secret() {
 	if [[ $# -ne 2 ]]; then

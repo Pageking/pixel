@@ -1,7 +1,7 @@
 #!/bin/bash
 
-source "$(dirname "${BASH_SOURCE[0]}")/../check-public-folder.sh"
-source "$(dirname "${BASH_SOURCE[0]}")/env/get-github-var.sh"
+source "${BREW_PREFIX}/libexec/lib/helpers/check-public-folder.sh"
+source "${BREW_PREFIX}/libexec/lib/helpers/env/get-github-var.sh"
 check_public_folder
 
 removeTest() {
