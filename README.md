@@ -10,7 +10,10 @@ The custom CLI for Pageking projects. This CLI is written for and by Pageking, u
 4.  Make sure you have the [LocalWP](https://localwp.com/help-docs/getting-started/installing-local/) application
 
 When all programs are installed, make sure you are logged in correctly in all different CLI tools. 
+
 For 1Password, make sure you have the <a href="https://developer.1password.com/docs/ssh/agent/" target="_blank">SSH agent</a> enabled.
+
+For Github, make sure you have authenticated with your own Pageking Github account with `gh auth login`. For more info, check the <a href="https://docs.github.com/en/github-cli/github-cli/quickstart" target="_blank">quickstart guide</a>.
 
 ##  Usage
 
@@ -37,24 +40,19 @@ You will automatically checkout the development branch, since this is the branch
 Whenever the day ends, or when you have finished a feature, you will commit your changes to the development branch. It is good practice to sync your project to the test enviroment once in while, so 
 project managers and clients can review your progress. To setup your test enviroment, there are some steps required:
 
-### Database export
-
-To create an export of your database for syncing to the test enviroment, open the site shell through the LocalWP application:
-
-<img width="356" height="102" alt="image" src="https://github.com/user-attachments/assets/6ca5e1ca-b187-4251-8ee6-50a4299152c0" />
-
-Type: `wp db export database.sql` and hit Enter. There should now be a database.sql in your `/public/` folder
-
 ### Setting up the test enviroment
 
 > [!TIP]
 >  If this is your first project with Pixel, you will need to setup an SSH connection with the Plesk server. Contact a senior developer to help you with this.
 
-1.  `pixel init-test`
-2.  When prompted to sync the plugins and/or database, type Y
-3.  When prompted to sync the plugins, type Y
-4.  When prompted to sync the media files, type Y
-5.  When prompted to sync the database, type Y
+1. `pixel init-test`
+2. You will be prompted to enter the connection info, follow the steps below:
+3. When your Plesk environment is created, navigate to the Plesk panel and create an SSL certificate.
+5. Now login to the backend and enter the WP Migrate plugin license key.
+6. Check both toggles next to the connection info and copy the connection info with the "Copy to clipboard" button.
+7. Paste the contents of the connection info into the terminal and press Enter.
+<img width="1173" height="274" alt="image" src="https://github.com/user-attachments/assets/832dc55c-439d-4e88-8227-d2af1489b2ab" />
+
 
 Your project should now be running on the Plesk server. Whenever you merge **(WITH A PULL REQUEST)** your changes to the test branch, your code will automatically be deployed to the test/Plesk server.
 
@@ -62,12 +60,21 @@ Your project should now be running on the Plesk server. Whenever you merge **(WI
 
 If you want to sync some part of the project which is not included in the pk-theme-child (media files, plugins, database), you can use the following command:
 
-`pixel sync-dev-test`
+`pixel sync-dev-to-test`
 
-This will give you the same prompts as the `pixel init-test` command, but now you need to choose which parts you want to sync and which you don't.
+Or
+
+`pixel sync-test-to-dev`
 
 > [!TIP]
-> It is good practice to create a new database.sql before this command, since the old one may be outdated.
+> You can add the following "flags" to the command for more control:
+>
+> 
+> `--no-database` : Skip database synchronization
+> 
+> `--no-plugins` : Skip Plugin synchronization
+> 
+> `--no-media` : Skip Media/Uploads synchronization
 
 > [!NOTE]
 > If the pk-theme is updated during development, the pk-theme on the test enviroment is out-of-sync with your local one. To update the pk-theme on the test enviroment, use the `pixel test-pull-main` command.
@@ -84,13 +91,24 @@ You will be prompted to select a Cloudways server, please choose the newest one 
 
 Type in the label of the Cloudways Application. This *can* be different from your project, but best practice is to name it after the project you're working on.
 
-Your project should now be running on the Cloudways server. Whenever you merge **(WITH A PULL REQUEST)** your changes to the production branch, your code will automatically be deployed to the production/Cloudways server.
+Follow the same steps as you did with the setup of the test environment.
 
 ### Syncing your project after `init-prod`
 
 If you want to sync some part of the project which is not included in the pk-theme-child (media files, plugins, database), you can use the following command:
 
-`pixel sync-dev-test`
+`pixel sync-dev-to-prod`
 
-This will give you the same prompts as the `pixel init-test` command, but now you need to choose which parts you want to sync and which you don't.
+Or
 
+`pixel sync-prod-to-dev`
+
+> [!TIP]
+> You can add the following "flags" to the command for more control:
+>
+> 
+> `--no-database` : Skip database synchronization
+> 
+> `--no-plugins` : Skip Plugin synchronization
+> 
+> `--no-media` : Skip Media/Uploads synchronization
