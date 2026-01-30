@@ -2,16 +2,16 @@
 IFS=$'\n'
 set -e
 
-source "$(dirname "${BASH_SOURCE[0]}")/helpers/env/get-github-var.sh"
-source "$(dirname "${BASH_SOURCE[0]}")/helpers/env/set-github-var.sh"
-source "$(dirname "${BASH_SOURCE[0]}")/helpers/env/set-github-secret.sh"
-source "$(dirname "${BASH_SOURCE[0]}")/helpers/check-public-folder.sh"
-source "$(dirname "${BASH_SOURCE[0]}")/helpers/get-project-name.sh"
-source "$(dirname "${BASH_SOURCE[0]}")/helpers/prod/get-cw-app-folder.sh"
-source "$(dirname "${BASH_SOURCE[0]}")/helpers/prod/get-cw-bearer.sh"
-source "$(dirname "${BASH_SOURCE[0]}")/helpers/prod/cw-generate-git-ssh.sh"
-source "$(dirname "${BASH_SOURCE[0]}")/helpers/prod/cw-clone-project-repo.sh"
-source "$(dirname "${BASH_SOURCE[0]}")/helpers/prod/cw-clone-main-repo.sh"
+source "${BREW_PREFIX}/libexec/lib/helpers/env/get-github-var.sh"
+source "${BREW_PREFIX}/libexec/lib/helpers/env/set-github-var.sh"
+source "${BREW_PREFIX}/libexec/lib/helpers/env/set-github-secret.sh"
+source "${BREW_PREFIX}/libexec/lib/helpers/check-public-folder.sh"
+source "${BREW_PREFIX}/libexec/lib/helpers/get-project-name.sh"
+source "${BREW_PREFIX}/libexec/lib/helpers/prod/get-cw-app-folder.sh"
+source "${BREW_PREFIX}/libexec/lib/helpers/prod/get-cw-bearer.sh"
+source "${BREW_PREFIX}/libexec/lib/helpers/prod/cw-generate-git-ssh.sh"
+source "${BREW_PREFIX}/libexec/lib/helpers/prod/cw-clone-project-repo.sh"
+source "${BREW_PREFIX}/libexec/lib/helpers/prod/cw-clone-main-repo.sh"
 check_public_folder
 get_cw_bearer
 
@@ -97,6 +97,6 @@ cwCloneMainRepo "$SERVER_USER"
 
 read -p "Do you also want to sync the plugins and database? [y/N]: " sync_to_prod
 if [[ "$sync_to_prod" =~ ^[Yy]$ ]]; then
-	source "$(dirname "${BASH_SOURCE[0]}")/helpers/prod/sync-dev-to-prod.sh"
+	source "${BREW_PREFIX}/libexec/lib/helpers/prod/sync-dev-to-prod.sh"
 	sync_dev_to_prod
 fi

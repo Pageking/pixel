@@ -2,9 +2,9 @@
 IFS=$'\n'
 set -eou pipefail
 
-source "$(dirname "${BASH_SOURCE[0]}")/helpers/check-public-folder.sh"
-source "$(dirname "${BASH_SOURCE[0]}")/helpers/env/get-github-var.sh"
-source "$(dirname "${BASH_SOURCE[0]}")/helpers/env/set-github-var.sh"
+source "${BREW_PREFIX}/libexec/lib/helpers/check-public-folder.sh"
+source "${BREW_PREFIX}/libexec/lib/helpers/env/get-github-var.sh"
+source "${BREW_PREFIX}/libexec/lib/helpers/env/set-github-var.sh"
 check_public_folder
 
 # === CONFIGURATION ===
@@ -119,13 +119,14 @@ read -rp "Paste the wp-migrate-db-pro connection string: " migrate_connection_st
 if [[ -z "$migrate_connection_string" ]]; then
 	echo "⚠️ No connection string provided. Skipping GitHub secret update."
 else
+	# IDEA: paste this in the 1Pass credentials instead of GH var
 	echo "💾 Saving connection string to GitHub secret..."
-	set_github_var "WP_MIGRATE_CONNECTION_STRING" "$migrate_connection_string"
+	set_github_var "WPM_TEST_CONNECTION_STRING" "$migrate_connection_string"
 	echo "✅ Connection string saved to GitHub secret"
 fi
 
-read -rp "Do you want to sync the database/media/uploads to this test environment?" sync_to_test
+read -rp "Do you want to sync the database/media/uploads to this test environment? [y/N]" sync_to_test
 if [[ "$sync_to_test" =~ ^[Yy]$ ]]; then
-	source "$(dirname "${BASH_SOURCE[0]}")/helpers/test/sync-dev-to-test.sh"
+	source "${BREW_PREFIX}/libexec/lib/helpers/test/sync-dev-to-test.sh"
 	sync_dev_to_test
 fi
