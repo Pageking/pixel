@@ -29,7 +29,7 @@ shift || true
 
 case "$COMMAND" in
   -v|--version)
-    echo "Pixel CLI version 1.2.4"
+    echo "Pixel CLI version 1.2.5"
 	;;
   init)
     source "${BREW_PREFIX}/libexec/lib/init.sh"
@@ -42,7 +42,7 @@ case "$COMMAND" in
 	;;
   sync-dev-to-test|sync-dev-test)
 	source "${BREW_PREFIX}/libexec/lib/helpers/test/sync-dev-to-test.sh"
-	sync_dev_to_test
+	sync_dev_to_test "$@"
 	;;
   sync-test-to-dev|sync-test-dev)
 	source "${BREW_PREFIX}/libexec/lib/helpers/test/sync-test-to-dev.sh"
@@ -50,11 +50,11 @@ case "$COMMAND" in
 	;;
   sync-dev-to-prod|sync-dev-prod)
 	source "${BREW_PREFIX}/libexec/lib/helpers/prod/sync-dev-to-prod.sh"
-	sync_dev_to_prod
+	sync_dev_to_prod "$@"
 	;;
   sync-prod-to-dev|sync-prod-dev)
 	source "${BREW_PREFIX}/libexec/lib/helpers/prod/sync-prod-to-dev.sh"
-	sync_prod_to_dev
+	sync_prod_to_dev "$@"
 	;;
   test-pull-main)
 	source "${BREW_PREFIX}/libexec/lib/helpers/test/test-pull-main.sh"
