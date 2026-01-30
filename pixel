@@ -52,6 +52,10 @@ case "$COMMAND" in
 	source "${BREW_PREFIX}/libexec/lib/helpers/prod/sync-dev-to-prod.sh"
 	sync_dev_to_prod
 	;;
+  sync-prod-to-dev|sync-prod-dev)
+	source "${BREW_PREFIX}/libexec/lib/helpers/prod/sync-prod-to-dev.sh"
+	sync_prod_to_dev
+	;;
   test-pull-main)
 	source "${BREW_PREFIX}/libexec/lib/helpers/test/test-pull-main.sh"
 	test_pull_main

@@ -1,6 +1,6 @@
 source "$(dirname "${BASH_SOURCE[0]}")/../../helpers/env/get-github-var.sh"
 
-sync_dev_to_prod() {
+sync_prod_to_dev() {
 	local MDB_CONN_STRING
 	MDB_CONN_STRING=$(get_github_var "WPM_PROD_CONNECTION_STRING")
 
@@ -18,5 +18,5 @@ sync_dev_to_prod() {
 	fi
 
 	echo "🔃 Syncing uploads/media/database to production"
-	eval "wp migratedb push $MDB_CONN_STRING --plugin-files=all --media=all"
+	eval "wp migratedb pull $MDB_CONN_STRING --plugin-files=all --media=all"
 }
