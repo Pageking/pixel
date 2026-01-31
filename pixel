@@ -74,6 +74,10 @@ case "$COMMAND" in
 	RESULT=$(get_github_var "$VAR_NAME")
 	echo "$RESULT"
 	;;
+  create-layout)
+	source "${BREW_PREFIX}/libexec/lib/helpers/remove-test.sh"
+	create_layout "$@"
+	;;
   *)
     echo "Usage: pixel <command>"
 	echo ""
