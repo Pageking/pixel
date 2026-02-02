@@ -29,7 +29,7 @@ shift || true
 
 case "$COMMAND" in
   -v|--version)
-    echo "Pixel CLI version 1.2.5"
+    echo "Pixel CLI version 1.3.0"
 	;;
   init)
     source "${BREW_PREFIX}/libexec/lib/init.sh"
@@ -73,6 +73,10 @@ case "$COMMAND" in
 	VAR_NAME="$1"
 	RESULT=$(get_github_var "$VAR_NAME")
 	echo "$RESULT"
+	;;
+  create-layout)
+	source "${BREW_PREFIX}/libexec/lib/helpers/create-layout.sh"
+	create_layout "$@"
 	;;
   *)
     echo "Usage: pixel <command>"

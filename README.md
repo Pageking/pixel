@@ -1,6 +1,6 @@
 #  Pixel
 
-The custom CLI for Pageking projects. This CLI is written for and by Pageking, usable in projects in with the [pk-theme](https://github.com/Pageking/pk-theme) and [pk-theme-child](https://github.com/Pageking/pk-theme-child) themes. 
+The custom CLI for Pageking projects. This CLI is written for and by Pageking, usable in projects with the [pk-theme](https://github.com/Pageking/pk-theme) and [pk-theme-child](https://github.com/Pageking/pk-theme-child) themes. 
 
 ## Installation
 
@@ -112,3 +112,129 @@ Or
 > `--no-plugins` : Skip Plugin synchronization
 > 
 > `--no-media` : Skip Media/Uploads synchronization
+
+---
+
+## 🎨 Creating Custom Layouts
+
+The `create-layout` command is a powerful tool for quickly scaffolding new flexible content layouts in your pk-theme-child project. This command creates a structured layout with all necessary files, supporting custom templates for consistent code patterns across your project.
+
+### Basic Usage
+
+```bash
+pixel create-layout <slug> <label> [category]
+```
+
+**Parameters:**
+- `<slug>` (required) - The layout identifier, used in file names and CSS classes
+  - Must be lowercase letters, numbers, and underscores only
+  - Example: `hero_section`, `pricing_table`, `testimonials_grid`
+- `<label>` (required) - Human-readable name shown in the WordPress admin
+  - Example: `Hero Section`, `Pricing Table`, `Testimonials Grid`
+- `[category]` (optional) - ACF layout category (defaults to `Content`)
+  - Example: `Marketing`, `Content`, `Headers`, `Footers`
+
+### Examples
+
+#### Example 1: Basic Content Layout
+```bash
+pixel create-layout hero_banner "Hero Banner"
+```
+This creates a new layout at:
+```
+wp-content/themes/pk-theme-child/flex/content/layouts/hero_banner/
+├── frontend.php  # Template markup
+├── fields.php    # ACF field configuration
+├── script.js     # JavaScript functionality
+└── style.css     # Layout styles
+```
+
+#### Example 2: Marketing Layout with Category
+```bash
+pixel create-layout pricing_table "Pricing Table" "Marketing"
+```
+This creates the same structure but categorizes the layout under "Marketing" in the ACF flexible content selector.
+
+#### Example 3: Grid Layout
+```bash
+pixel create-layout testimonials_grid "Testimonials Grid" "Social Proof"
+```
+
+### What Gets Created
+
+When you run the command, the following happens:
+
+1. **Directory Creation**
+   - Creates a folder named after your slug in `wp-content/themes/pk-theme-child/flex/content/layouts/`
+   
+2. **File Generation**
+   - Generates four files: `frontend.php`, `fields.php`, `script.js`, and `style.css`
+   - Files are either created from your custom templates (if they exist) or created as empty files
+
+3. **Placeholder Replacement**
+   - Any placeholders in your templates are replaced with actual values:
+     - `{{slug}}` → `hero_banner`
+     - `{{label}}` → `Hero Banner`
+     - `{{category}}` → `Content` (or your specified category)
+
+### Using Custom Templates
+
+To maximize productivity and maintain consistency, you can create custom template files that the `create-layout` command will use automatically.
+
+#### Setting Up Templates
+
+1. **Create the templates directory:**
+   ```bash
+   mkdir -p ~/.config/pixel/templates
+   ```
+
+2. **Create your template files:**
+   ```bash
+   cd ~/.config/pixel/templates
+   touch frontend.php fields.php script.js style.css
+   ```
+
+### Template Placeholders
+
+The following placeholders are automatically replaced when creating a layout:
+
+| Placeholder | Replaced With | Example |
+|-------------|---------------|---------|
+| `{{slug}}` | Layout slug | `hero_banner` |
+| `{{label}}` | Layout label | `Hero Banner` |
+| `{{category}}` | Layout category | `Content` |
+
+## Complete Command Reference
+
+### Initialize Commands
+```bash
+pixel init                    # Initialize GitHub repo + dev environment
+pixel init-test              # Initialize test environment on Plesk server
+pixel init-prod              # Initialize production environment on Cloudways server
+```
+
+### Sync Commands
+```bash
+pixel sync-dev-to-test       # Sync from dev to test environment
+pixel sync-test-to-dev       # Sync from test to dev environment
+pixel sync-dev-to-prod       # Sync from dev to production environment
+pixel sync-prod-to-dev       # Sync from production to dev environment
+```
+
+**Sync Flags:**
+- `--no-database` - Skip database synchronization
+- `--no-plugins` - Skip plugin synchronization
+- `--no-media` - Skip uploads/media synchronization
+
+### Layout Commands
+```bash
+pixel create-layout <slug> <label> [category]
+```
+
+### Management Commands
+```bash
+pixel test-pull-main                      # Pull latest main branch on test environment
+pixel remove-test                         # Remove test environment from Plesk server
+pixel get-github-var <variable_name>     # Get a GitHub Actions variable
+pixel -v (--version)                      # Display version information
+```
