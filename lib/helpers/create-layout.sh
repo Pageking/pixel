@@ -1,6 +1,12 @@
 create_layout() {
-	local layout_category
+	local layout_slug layyout_label layout_category
+	local TEMPLATE_DIR="$HOME/.config/pixel/templates"
 
+	if ! [[ -d "$TEMPLATE_DIR" ]]; then
+		echo "Missing templates folder in your /.config/pixel/. Setting a standard template for the usual files can increase your productivity!"
+	fi
+
+	# Validate slug parameter
 	if ! [[ -n "$1" ]]; then
 		echo "🤦 No layout slug given."
 		exit 1
@@ -11,70 +17,95 @@ create_layout() {
 		exit 1
 	fi
 
+	layout_slug="$1"
+
+	# Validate label parameter
 	if ! [[ -n "$2" ]]; then
 		echo "🤦 No layout label given."
 		exit 1
 	fi
 
+	layout_label="$2"
+
+	# Set default category if not provided
 	if ! [[ -n "$3" ]]; then
 		layout_category='Content'
+	else
+		layout_category="$3"
 	fi
 
+	# Navigate to layouts directory
 	cd wp-content/themes/pk-theme-child/flex/content/layouts/ || { echo "No layouts folder found"; exit 1; }
 
-	if [[ -d "$1" ]]; then
-		read -rp "🔄 $1 already exists, overwrite? [y/N]" overwrite_layout
-		if [[ "$overwrite_layout" != "y" ]] && [[ "$overwrite_layout" != "Y" ]]; then
-			echo "❌ Cancelling creation of $1."
-			exit 0
-		fi
+	# Check if layout already exists
+	if [[ -d "$layout_slug" ]]; then
+		echo "Layout $layout_slug already exists."
+		echo "❌ Cancelling creation of $layout_slug."
+		exit 0
 	else
-		read -rp "➕ Create $1 layout? [Y/n]" create_layout
+		read -rp "📝 Create $layout_slug layout? [Y/n] " create_layout
 		if [[ "$create_layout" =~ ^[Nn]$ ]]; then
-			echo "❌ Cancelling creation of $1."
+			echo "❌ Cancelling creation of $layout_slug."
 			exit 0
 		fi
 	fi
 
-	mkdir "$1"
+	# Create layout directory
+	mkdir -p "$layout_slug"
+	cd "$layout_slug" || { echo "Could not find folder $layout_slug."; exit 1; }
 
-	cd "$1" || { echo "Could not find folder $1."; exit 1; }
+	# Function to replace placeholders in templates
+	replace_placeholders() {
+		local content="$1"
+		content="${content//\{\{slug\}\}/$layout_slug}"
+		content="${content//\{\{label\}\}/$layout_label}"
+		content="${content//\{\{category\}\}/$layout_category}"
+		echo "$content"
+	}
 
-	cat > fields.php <<- EOF
-<?php
-\$heading = \$this->getComponent('heading', 'heading');
+	# Create frontend.php
+	if [[ -f "$TEMPLATE_DIR/frontend.php" ]]; then
+		echo "📄 Using frontend.php template from /.config/pixel/templates/"
+		template_content=$(cat "$TEMPLATE_DIR/frontend.php")
+		replaced_content=$(replace_placeholders "$template_content" "$layout_slug" "$layout_label")
+		echo "$replaced_content" > frontend.php
+	else
+		touch frontend.php
+	fi
 
-\$builder->addFields(\$heading);
+	# Create fields.php
+	if [[ -f "$TEMPLATE_DIR/fields.php" ]]; then
+		echo "📄 Using fields.php template from /.config/pixel/templates/"
+		template_content=$(cat "$TEMPLATE_DIR/fields.php")
+		replaced_content=$(replace_placeholders "$template_content" "$layout_slug" "$layout_label")
+		echo "$replaced_content" > fields.php
+	else
+		touch fields.php
+	fi
 
-\$this->addLayout('$1', '$2', \$builder, '$layout_category');
-EOF
+	# Create script.js
+	if [[ -f "$TEMPLATE_DIR/script.js" ]]; then
+		echo "📄 Using script.js template from /.config/pixel/templates/"
+		template_content=$(cat "$TEMPLATE_DIR/script.js")
+		replaced_content=$(replace_placeholders "$template_content" "$layout_slug" "$layout_label")
+		echo "$replaced_content" > script.js
+	else
+		touch script.js
+	fi
 
-	cat > frontend.php <<- EOF
-<?php
-use PKFlex\Classes\Render;
+	# Create style.css
+	if [[ -f "$TEMPLATE_DIR/style.css" ]]; then
+		echo "📄 Using style.css template from /.config/pixel/templates/"
+		template_content=$(cat "$TEMPLATE_DIR/style.css")
+		replaced_content=$(replace_placeholders "$template_content" "$layout_slug" "$layout_label")
+		echo "$replaced_content" > style.css
+	else
+		touch style.css
+	fi
 
-\$title = Render::component('heading', 'heading');
-?>
-
-<div class="flex-layout $1-layout">
-	<div class="pk-row">
-		<div class="pk-row-content pk-grid-container">
-			<div class="content span-12 md-span-8 sm-span-5">
-                <?= \$title ?>
-			</div>
-		</div>
-	</div>
-</div>
-EOF
-
-	cat > script.js <<- EOF
-document.addEventListener("DOMContentLoaded", function () {
-
-});
-EOF
-	cat > style.css <<- EOF
-.$1-layout {
-
-}
-EOF
+	echo "✅ Layout '$layout_slug' created successfully!"
+	echo "📁 Location: $(pwd)"
+	echo ""
+	echo "Files created:"
+	ls -l
 }
