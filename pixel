@@ -112,7 +112,7 @@ case "$COMMAND" in
 	echo "    sync-dev-to-test				Sync plugins and database from dev to test environment"
 	echo "    sync-test-to-dev				Sync plugins and database from test to dev environment"
 	echo "    sync-dev-to-prod				Sync plugins and database from dev to production environment"
-	echo "    sync-prod-to-dev				Sync plugins and database from dev to production environment"
+	echo "    sync-prod-to-dev				Sync plugins and database from production to development environment"
 	echo ""
 	echo "All sync commands can be used with the following flags:"
 	echo "    --no-database          			Skip database synchronization"

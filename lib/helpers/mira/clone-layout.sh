@@ -14,6 +14,10 @@ clone_layout() {
         exit 1
     fi
 
+	if [[ ! "$layout_name" =~ ^mira_ ]]; then
+		layout_name="mira_$layout_name"
+	fi
+
 	layout_path="$MIRA_LAYOUTS/$layout_name"
 	if [ ! -d "$layout_path" ]; then
         echo "❓ Block '$layout_name' not found in Mira repository"
