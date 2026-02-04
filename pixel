@@ -78,6 +78,23 @@ case "$COMMAND" in
 	source "${BREW_PREFIX}/libexec/lib/helpers/create-layout.sh"
 	create_layout "$@"
 	;;
+  mira)
+	SUBCOMMAND="$1"
+	shift || true
+	case "$SUBCOMMAND" in 
+		setup)
+			source "${BREW_PREFIX}/libexec/lib/helpers/mira/setup.sh"
+			setup_mira
+			;;
+		clone)
+			source "${BREW_PREFIX}/libexec/lib/helpers/mira/clone-layout.sh"
+			clone_layout "$@"
+			;;
+		update)
+			echo "update"
+			;;
+	esac
+	;;
   *)
     echo "Usage: pixel <command>"
 	echo ""
