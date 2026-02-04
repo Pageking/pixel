@@ -29,7 +29,7 @@ shift || true
 
 case "$COMMAND" in
   -v|--version)
-    echo "Pixel CLI version 1.3.0"
+    echo "Pixel CLI version 1.4.0"
 	;;
   init)
     source "${BREW_PREFIX}/libexec/lib/init.sh"
@@ -96,7 +96,8 @@ case "$COMMAND" in
 			clone_layout "$@"
 			;;
 		update)
-			echo "update"
+			source "${BREW_PREFIX}/libexec/lib/helpers/mira/update.sh"
+			update_mira
 			;;
 	esac
 	;;
