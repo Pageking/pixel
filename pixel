@@ -29,7 +29,7 @@ shift || true
 
 case "$COMMAND" in
   -v|--version)
-    echo "Pixel CLI version 1.3.0"
+    echo "Pixel CLI version 1.4.0"
 	;;
   init)
     source "${BREW_PREFIX}/libexec/lib/init.sh"
@@ -78,6 +78,29 @@ case "$COMMAND" in
 	source "${BREW_PREFIX}/libexec/lib/helpers/create-layout.sh"
 	create_layout "$@"
 	;;
+  mira)
+	SUBCOMMAND="$1"
+	shift || true
+	MIRA_LAYOUTS="$HOME/.config/pixel/mira/flex/content/layouts"
+	case "$SUBCOMMAND" in 
+		setup)
+			source "${BREW_PREFIX}/libexec/lib/helpers/mira/setup.sh"
+			setup_mira
+			;;
+		list)
+			source "${BREW_PREFIX}/libexec/lib/helpers/mira/list.sh"
+			list_mira
+			;;
+		clone)
+			source "${BREW_PREFIX}/libexec/lib/helpers/mira/clone-layout.sh"
+			clone_layout "$@"
+			;;
+		update)
+			source "${BREW_PREFIX}/libexec/lib/helpers/mira/update.sh"
+			update_mira
+			;;
+	esac
+	;;
   *)
     echo "Usage: pixel <command>"
 	echo ""
@@ -90,7 +113,7 @@ case "$COMMAND" in
 	echo "    sync-dev-to-test				Sync plugins and database from dev to test environment"
 	echo "    sync-test-to-dev				Sync plugins and database from test to dev environment"
 	echo "    sync-dev-to-prod				Sync plugins and database from dev to production environment"
-	echo "    sync-prod-to-dev				Sync plugins and database from dev to production environment"
+	echo "    sync-prod-to-dev				Sync plugins and database from production to development environment"
 	echo ""
 	echo "All sync commands can be used with the following flags:"
 	echo "    --no-database          			Skip database synchronization"
