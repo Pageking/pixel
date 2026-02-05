@@ -31,6 +31,10 @@ case "$COMMAND" in
   -v|--version)
     echo "Pixel CLI version 1.4.0"
 	;;
+  update|upgrade)
+	source "${BREW_PREFIX}/libexec/lib/helpers/update-pixel.sh"
+	update_pixel
+	;;
   init)
     source "${BREW_PREFIX}/libexec/lib/init.sh"
     ;;
