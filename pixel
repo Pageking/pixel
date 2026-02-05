@@ -29,7 +29,11 @@ shift || true
 
 case "$COMMAND" in
   -v|--version)
-    echo "Pixel CLI version 1.4.0"
+    echo "Pixel CLI version 1.4.1"
+	;;
+  update|upgrade)
+	source "${BREW_PREFIX}/libexec/lib/helpers/update-pixel.sh"
+	update_pixel
 	;;
   init)
     source "${BREW_PREFIX}/libexec/lib/init.sh"
@@ -130,6 +134,7 @@ case "$COMMAND" in
 	echo "    test-pull-main				Pull latest main branch on test environment"
 	echo "    remove-test					Remove test environment from Plesk server"
 	echo "    get-github-var <variable_name>		Get a GitHub Actions variable from the project repo"
+	echo "    upgrade | update				Check for updates and install them directly"
 	echo "    -v (--version)				Display version information"
     ;;
 esac
