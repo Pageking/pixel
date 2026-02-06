@@ -82,6 +82,10 @@ case "$COMMAND" in
 	source "${BREW_PREFIX}/libexec/lib/helpers/create-layout.sh"
 	create_layout "$@"
 	;;
+  renew-connection-info)
+	source "${BREW_PREFIX}/libexec/lib/helpers/env/renew-connection-info.sh"
+	renew_connection_info "$1"
+	;;
   mira)
 	SUBCOMMAND="$1"
 	shift || true
