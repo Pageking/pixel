@@ -78,8 +78,7 @@ echo "✅ New app created successfully with ID: $APP_ID"
 getAppFolder "$ACCESS_TOKEN" "$SERVER_ID" "$APP_ID"
 echo "App folder name: $APP_FOLDER_NAME"
 
-CONFIG_PATH="$HOME/.config/pixel/config.json"
-CLOUDWAYS_API_KEY=$(jq -r '.cw.api_key' "$CONFIG_PATH")
+CLOUDWAYS_API_KEY=$(get_1pass_var "Servers" "Cloudways" "api_key")
 set_github_secret "CLOUDWAYS_API_KEY" "$CLOUDWAYS_API_KEY"
 
 set_github_var "CLOUDWAYS_APP_FOLDER" "$APP_FOLDER_NAME"

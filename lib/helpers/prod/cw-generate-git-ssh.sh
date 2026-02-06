@@ -5,9 +5,8 @@ set -e
 source "${BREW_PREFIX}/libexec/lib/helpers/env/get-github-var.sh"
 
 cwGenerateGitSSH() {
-	local CONFIG_PATH GITHUB_ORG PROJECT_NAME SERVER_LABEL SERVER_ID APP_ID
-	CONFIG_PATH="$HOME/.config/pixel/config.json"
-	GITHUB_ORG=$(jq -r '.github.org' "$CONFIG_PATH")
+	local GITHUB_ORG PROJECT_NAME SERVER_LABEL SERVER_ID APP_ID
+	GITHUB_ORG=$(get_1pass_var "Servers" "GitHub" "org")
 	PROJECT_NAME=$(get_github_var "PROJECT_NAME")
 	SERVER_LABEL=$(get_github_var "CLOUDWAYS_SERVER_LABEL")
 	SERVER_ID=$(get_github_var "CLOUDWAYS_SERVER_ID")

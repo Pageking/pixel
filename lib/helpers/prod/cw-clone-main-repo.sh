@@ -3,15 +3,15 @@ IFS=$'\n'
 set -e
 
 source "${BREW_PREFIX}/libexec/lib/helpers/env/get-github-var.sh"
+source "${BREW_PREFIX}/libexec/lib/helpers/env/get-1pass-var.sh"
 
 cwCloneMainRepo() {
 	if [[ $# -ne 1 ]]; then
         echo "❌ Usage: cwCloneMainRepo <server_user>"
         exit 1
     fi
-	local CONFIG_PATH GIT_REPO SERVER_ID SERVER_USER APP_FOLDER
-	CONFIG_PATH="$HOME/.config/pixel/config.json"
-	GIT_REPO="git@github.com:$(jq -r '.github.org' "$CONFIG_PATH")/pk-theme.git"
+	local GIT_REPO SERVER_USER APP_FOLDER
+	GIT_REPO="git@github.com:$(get_1pass_var "Servers" "GitHub" "org")/pk-theme.git"
 
 	SERVER_IP=$(get_github_var "CLOUDWAYS_SERVER_IP")
 	SERVER_USER=$(get_github_var "CLOUDWAYS_SERVER_USER")

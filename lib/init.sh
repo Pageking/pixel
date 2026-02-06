@@ -4,7 +4,7 @@ source "${BREW_PREFIX}/libexec/lib/helpers/check-public-folder.sh"
 check_public_folder
 
 source "${BREW_PREFIX}/libexec/lib/helpers/get-project-name.sh"
-PROJECT_NAME=$(get_project_name)
+PROJECT_NAME=$(basename "$(dirname "$(dirname "$PWD")")")
 
 if [[ ! "$PROJECT_NAME" =~ ^[a-z0-9-]+$ ]]; then
   echo "Invalid project name. Use only lowercase letters, numbers, and hyphens (no spaces or special characters)."
@@ -27,13 +27,12 @@ fi
 
 source "${BREW_PREFIX}/libexec/lib/helpers/env/get-1pass-var.sh"
 
-CONFIG_PATH="$HOME/.config/pixel/config.json"
 # TODO: make deploy key per user instead of master for everyone
 SERVER=$(get_1pass_var "Servers" "PK1" "server")
 DOMAIN=$(get_1pass_var "Servers" "PK1" "domain")
-GITHUB_ORG=$(get_1pass_var "Servers" "Github" "org")
-MAIN_REPO=$(get_1pass_var "Servers" "Github" "main_repo")
-TEMPLATE_REPO=$(get_1pass_var "Servers" "Github" "template_repo")
+GITHUB_ORG=$(get_1pass_var "Servers" "GitHub" "org")
+MAIN_REPO=$(get_1pass_var "Servers" "GitHub" "main_repo")
+TEMPLATE_REPO=$(get_1pass_var "Servers" "GitHub" "template_repo")
 
 echo "📦 Pulling '$MAIN_REPO'..."
 git clone "https://github.com/$GITHUB_ORG/$MAIN_REPO.git"
@@ -43,7 +42,6 @@ echo "📦 Creating repo '$PROJECT_NAME' from template '$TEMPLATE_REPO'..."
 gh repo create "$GITHUB_ORG/$PROJECT_NAME" \
   --template "$GITHUB_ORG/$TEMPLATE_REPO" \
   --private
-gh secret set "PLESK_SSH_KEY" --body "$DEPLOY_KEY" --repo "$GITHUB_ORG/$PROJECT_NAME"
 gh secret set "PLESK_SERVER" --body "$SERVER" --repo "$GITHUB_ORG/$PROJECT_NAME"
 gh secret set "PLESK_DOMAIN" --body "$DOMAIN" --repo "$GITHUB_ORG/$PROJECT_NAME"
 gh variable set "PROJECT_NAME" --body "$PROJECT_NAME" --repo "$GITHUB_ORG/$PROJECT_NAME"
