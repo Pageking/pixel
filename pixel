@@ -135,6 +135,7 @@ case "$COMMAND" in
 	echo "    clone <block-name>				Clone a specific layout from the Mira repo."
 	echo ""
 	echo "Management Commands:"
+	echo "    renew-connection-info			Re-enter the connection info for test or production"
 	echo "    test-pull-main				Pull latest main branch on test environment"
 	echo "    remove-test					Remove test environment from Plesk server"
 	echo "    get-github-var <variable_name>		Get a GitHub Actions variable from the project repo"
