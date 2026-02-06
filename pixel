@@ -29,7 +29,7 @@ shift || true
 
 case "$COMMAND" in
   -v|--version)
-    echo "Pixel CLI version 1.4.1"
+    echo "Pixel CLI version 1.4.2"
 	;;
   update|upgrade)
 	source "${BREW_PREFIX}/libexec/lib/helpers/update-pixel.sh"
@@ -82,6 +82,10 @@ case "$COMMAND" in
 	source "${BREW_PREFIX}/libexec/lib/helpers/create-layout.sh"
 	create_layout "$@"
 	;;
+  renew-connection-info)
+	source "${BREW_PREFIX}/libexec/lib/helpers/env/renew-connection-info.sh"
+	renew_connection_info "$1"
+	;;
   mira)
 	SUBCOMMAND="$1"
 	shift || true
@@ -131,6 +135,7 @@ case "$COMMAND" in
 	echo "    clone <block-name>				Clone a specific layout from the Mira repo."
 	echo ""
 	echo "Management Commands:"
+	echo "    renew-connection-info			Re-enter the connection info for test or production"
 	echo "    test-pull-main				Pull latest main branch on test environment"
 	echo "    remove-test					Remove test environment from Plesk server"
 	echo "    get-github-var <variable_name>		Get a GitHub Actions variable from the project repo"

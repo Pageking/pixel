@@ -3,6 +3,7 @@ set -euo pipefail
 IFS=$'\n\t'
 
 source "${BREW_PREFIX}/libexec/lib/helpers/env/get-github-var.sh"
+source "${BREW_PREFIX}/libexec/lib/helpers/env/get-1pass-var.sh"
 
 set_github_var() {
 	if [[ $# -ne 2 ]]; then
