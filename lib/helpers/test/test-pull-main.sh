@@ -3,20 +3,17 @@ IFS=$'\n'
 set -e
 
 source "${BREW_PREFIX}/libexec/lib/helpers/test/get-credentials.sh"
-source "${BREW_PREFIX}/libexec/lib/helpers/env/get-github-var.sh"
+source "${BREW_PREFIX}/libexec/lib/helpers/get-project-name.sh"
 
-test_pull_main() {
-  	local CONFIG_PATH="$HOME/.config/pixel/config.json"
-	
-	# --- Load config safely ---
-	local SERVER DOMAIN IP REPO
-	SERVER=$(jq -r '.servers.server_1.server' "$CONFIG_PATH")
-	DOMAIN=$(jq -r '.servers.server_1.domain' "$CONFIG_PATH")
-	IP=$(jq -r '.servers.server_1.ip' "$CONFIG_PATH")
-	REPO=$(jq -r '.github.main_repo' "$CONFIG_PATH")
+test_pull_main() {	
+	# --- Load vars safely ---
+	local SERVER DOMAIN REPO PROJECT_NAME THEME_DIR
+	SERVER=$(get_1pass_var "Servers" "PK1" "server")
+	DOMAIN=$(get_1pass_var "Servers" "PK1" "domain")
+	REPO=$(get_1pass_var "Servers" "GitHub" "main_repo")
 
 	# --- Validate config ---
-	for var in SERVER DOMAIN IP REPO; do
+	for var in SERVER DOMAIN REPO; do
 		if [[ -z "${!var}" || "${!var}" == "null" ]]; then
 			echo "❌ Config error: $var is empty"
 			exit 1
@@ -24,14 +21,12 @@ test_pull_main() {
 	done
 
 	# --- Project name ---
-	local PROJECT_NAME
-	PROJECT_NAME=$(get_github_var "PROJECT_NAME")
+	PROJECT_NAME=$(get_project_name)
 	if [[ -z "$PROJECT_NAME" ]]; then
 		echo "❌ Could not determine project name"
 		exit 1
 	fi
 
-	local THEME_DIR
 	THEME_DIR="/var/www/vhosts/${PROJECT_NAME}.${DOMAIN}/httpdocs/wp-content/themes/${REPO}"
 
 	# --- Credentials ---

@@ -10,9 +10,8 @@ set_github_var() {
         exit 1
     fi
 
-	local VAR_NAME VAR_VALUE RESULT CONFIG_PATH GITHUB_ORG PROJECT_NAME
-	CONFIG_PATH="$HOME/.config/pixel/config.json"
-	GITHUB_ORG=$(jq -r '.github.org' "$CONFIG_PATH")
+	local VAR_NAME VAR_VALUE RESULT GITHUB_ORG PROJECT_NAME
+	GITHUB_ORG=$(get_1pass_var "Servers" "GitHub" "org")
 	PROJECT_NAME=$(get_github_var "PROJECT_NAME")
 	VAR_NAME="$1"
 	VAR_VALUE="$2"

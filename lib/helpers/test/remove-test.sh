@@ -11,18 +11,15 @@ removeTest() {
 		exit 1
 	fi
 
-	local CONFIG_PATH="$HOME/.config/pixel/config.json"
-
 	# --- Load config safely ---
-	local SERVER DOMAIN IP VAULT
-	SERVER=$(jq -r '.servers.server_1.server' "$CONFIG_PATH")
-	DOMAIN=$(jq -r '.servers.server_1.domain' "$CONFIG_PATH")
-	IP=$(jq -r '.servers.server_1.ip' "$CONFIG_PATH")
+	local SERVER DOMAIN VAULT
+	SERVER=$(get_1pass_var "Servers" "PK1" "server")
+	DOMAIN=$(get_1pass_var "Servers" "PK1" "domain")
 	VAULT="Credentials"
 	
 
 	# --- Validate config ---
-	for var in SERVER DOMAIN IP VAULT; do
+	for var in SERVER DOMAIN VAULT; do
 		if [[ -z "${!var}" || "${!var}" == "null" ]]; then
 			echo "❌ Config error: $var is empty"
 			exit 1

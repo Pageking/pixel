@@ -5,19 +5,19 @@ set -eou pipefail
 source "${BREW_PREFIX}/libexec/lib/helpers/check-public-folder.sh"
 source "${BREW_PREFIX}/libexec/lib/helpers/env/get-github-var.sh"
 source "${BREW_PREFIX}/libexec/lib/helpers/env/set-github-var.sh"
+source "${BREW_PREFIX}/libexec/lib/helpers/env/get-1pass-var.sh"
 check_public_folder
 
 # === CONFIGURATION ===
 CONFIG_PATH="$HOME/.config/pixel/config.json"
-SERVER=$(jq -r '.servers.server_1.server' "$CONFIG_PATH")
-DOMAIN=$(jq -r '.servers.server_1.domain' "$CONFIG_PATH")
-IP=$(jq -r '.servers.server_1.ip' "$CONFIG_PATH")
-DB_PREFIX=$(jq -r '.wp.db_prefix' "$CONFIG_PATH")
+SERVER=$(get_1pass_var "Servers" "PK1" "server")
+DOMAIN=$(get_1pass_var "Servers" "PK1" "domain")
+IP=$(get_1pass_var "Servers" "PK1" "ip")
 WP_ADMIN=$(jq -r '.wp.admin_username' "$CONFIG_PATH")
 WP_ADMIN_PASS=$(jq -r '.wp.admin_password' "$CONFIG_PATH")
 WP_ADMIN_EMAIL=$(jq -r '.wp.admin_email' "$CONFIG_PATH")
 
-WWW_ROOT=$(jq -r '.servers.server_1.www_root' "$CONFIG_PATH")
+WWW_ROOT=$(get_1pass_var "Servers" "PK1" "www_root")
 
 PROJECT_NAME=$(get_github_var "PROJECT_NAME")
 if [[ ! "$PROJECT_NAME" =~ ^[a-z0-9-]+$ ]]; then
