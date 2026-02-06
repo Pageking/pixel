@@ -29,7 +29,7 @@ shift || true
 
 case "$COMMAND" in
   -v|--version)
-    echo "Pixel CLI version 1.4.1"
+    echo "Pixel CLI version 1.4.2"
 	;;
   update|upgrade)
 	source "${BREW_PREFIX}/libexec/lib/helpers/update-pixel.sh"
