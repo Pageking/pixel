@@ -56,7 +56,7 @@ sync_prod_to_dev() {
 	echo "🔃 Syncing uploads/media/database to production"
 	
 	# Build the migratedb command with conditional flags
-    mdb_command="wp migratedb push $MDB_CONN_STRING"
+    mdb_command="wp migratedb pull $MDB_CONN_STRING"
     
 	if [[ "$skip_database" == true ]]; then
         mdb_command="$mdb_command --exclude-database"
