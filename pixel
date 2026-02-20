@@ -90,6 +90,7 @@ case "$COMMAND" in
 	SUBCOMMAND="$1"
 	shift || true
 	MIRA_LAYOUTS="$HOME/.config/pixel/mira/flex/content/layouts"
+	MIRA_COMPONENTS="$HOME/.config/pixel/mira/flex/components"
 	case "$SUBCOMMAND" in 
 		setup)
 			source "${BREW_PREFIX}/libexec/lib/helpers/mira/setup.sh"
