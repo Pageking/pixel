@@ -33,9 +33,14 @@ clone_layout() {
 		exit 1
     fi
 
+	if [[ -e "$layout_path/components.json" ]]; then
+		source "${BREW_PREFIX}/libexec/lib/helpers/mira/clone-component.sh"
+		clone_component "$layout_path/components.json"
+	fi
+
 	# Copy the block
     echo "📦 Cloning $layout_name..."
-    cp -r "$layout_path" "$dest_path"
+    rsync -r --exclude="components.json" "$layout_path/" "$dest_path/"
 
 	if [ $? -eq 0 ]; then
         echo "Copied to $dest_path"
