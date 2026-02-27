@@ -53,7 +53,7 @@ sync_prod_to_dev() {
 		fi
 	fi
 
-	echo "🔃 Syncing uploads/media/database to production"
+	echo "🔃 Syncing uploads/media/database from production"
 	
 	# Build the migratedb command with conditional flags
     mdb_command="wp migratedb pull $MDB_CONN_STRING"
