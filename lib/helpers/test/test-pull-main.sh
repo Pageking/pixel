@@ -4,6 +4,7 @@ set -e
 
 source "${BREW_PREFIX}/libexec/lib/helpers/test/get-credentials.sh"
 source "${BREW_PREFIX}/libexec/lib/helpers/get-project-name.sh"
+source "${BREW_PREFIX}/libexec/lib/helpers/env/get-1pass-var.sh"
 
 test_pull_main() {	
 	# --- Load vars safely ---
