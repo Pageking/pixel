@@ -44,7 +44,7 @@ sync_dev_to_prod() {
 	MDB_CONN_STRING=$(get_github_var "WPM_PROD_CONNECTION_STRING")
 
 	if [[ -z "$MDB_CONN_STRING" ]]; then
-		read -rp "WPM_PROD_CONNECTION_STRING is empty, paste the test connection string:" migrate_connection_string
+		read -rp "WPM_PROD_CONNECTION_STRING is empty, paste the prod connection string:" migrate_connection_string
 		if [[ -z "$migrate_connection_string" ]]; then
 			echo "⚠️ No connection string provided. Skipping GitHub secret update."
 		else
