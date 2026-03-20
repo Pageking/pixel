@@ -24,6 +24,11 @@ test_set_core_version() {
 		fi
 	done
 
+	if [[ "$NEW_VERSION" != v* ]]; then
+		echo "❌ NEW_VERSION '$NEW_VERSION' must start with 'v' (e.g. v1.2.3)."
+		exit 1
+	fi
+
 	# --- Project name ---
 	PROJECT_NAME=$(get_project_name)
 	if [[ -z "$PROJECT_NAME" ]]; then

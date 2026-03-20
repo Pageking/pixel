@@ -25,6 +25,11 @@ prod_set_core_version() {
 		exit 1
 	fi
 
+	if [[ "$NEW_VERSION" != v* ]]; then
+		echo "❌ NEW_VERSION '$NEW_VERSION' must start with 'v' (e.g. v1.2.3)."
+		exit 1
+	fi
+
 	echo "You are currently on core version '$CORE_VERSION'. You want to switch to '$NEW_VERSION' on production."
 	read -p "⚠️ Are you sure you want to set the core version to '$NEW_VERSION' on production? ⚠️ [y/N]: " confirm_set_core_version
 	if [[ ! "$confirm_set_core_version" =~ ^[Yy]$ ]]; then
