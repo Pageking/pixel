@@ -31,7 +31,7 @@ test_set_core_version() {
 		exit 1
 	fi
 
-	echo "You are currently on core version '$CORE_VERSION'. You want to switch to '$NEW_VERSION'."
+	echo "You are currently on core version '$CORE_VERSION'. You want to switch to '$NEW_VERSION' on test."
 	read -p "⚠️ Are you sure you want to set the core version to '$NEW_VERSION' on test? ⚠️ [y/N]: " confirm_set_core_version
 	if [[ ! "$confirm_set_core_version" =~ ^[Yy]$ ]]; then
 		echo "❌ Aborting setting core version."
@@ -50,7 +50,7 @@ test_set_core_version() {
 		cd ${THEME_DIR}
 
 		git config --global --add safe.directory ${THEME_DIR}
-		git fetch origin main
+		git fetch --all
 		git checkout ${NEW_VERSION}
 	'
 EOF
