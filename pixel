@@ -44,6 +44,15 @@ case "$COMMAND" in
   init-prod)
 	source "${BREW_PREFIX}/libexec/lib/init-prod.sh"
 	;;
+  prod-set-core-version)
+  	if [[ $# -ne 1 ]]; then
+		echo "❌ Usage: pixel prod-set-core-version <version_tag>"
+		exit 1
+	fi
+	source "${BREW_PREFIX}/libexec/lib/helpers/prod/prod-set-core-version.sh"
+	NEW_TAG="$1"
+	prod_set_core_version "$NEW_TAG"
+	;;
   sync-dev-to-test|sync-dev-test)
 	source "${BREW_PREFIX}/libexec/lib/helpers/test/sync-dev-to-test.sh"
 	sync_dev_to_test "$@"
@@ -64,6 +73,15 @@ case "$COMMAND" in
 	source "${BREW_PREFIX}/libexec/lib/helpers/test/test-pull-main.sh"
 	test_pull_main
 	;;
+  test-set-core-version)
+  	if [[ $# -ne 1 ]]; then
+		echo "❌ Usage: pixel test-set-core-version <version_tag>"
+		exit 1
+	fi
+	source "${BREW_PREFIX}/libexec/lib/helpers/test/test-set-core-version.sh"
+	NEW_TAG="$1"
+	test_set_core_version "$NEW_TAG"
+	;;
   remove-test)
 	source "${BREW_PREFIX}/libexec/lib/helpers/test/remove-test.sh"
 	removeTest
@@ -77,6 +95,14 @@ case "$COMMAND" in
 	VAR_NAME="$1"
 	RESULT=$(get_github_var "$VAR_NAME")
 	echo "$RESULT"
+	;;
+  get-core-version)
+	source "${BREW_PREFIX}/libexec/lib/helpers/env/get-core-version.sh"
+	get_core_version
+	;;
+  set-core-version)
+	source "${BREW_PREFIX}/libexec/lib/helpers/env/set-core-version.sh"
+	set_core_version
 	;;
   create-layout)
 	source "${BREW_PREFIX}/libexec/lib/helpers/create-layout.sh"

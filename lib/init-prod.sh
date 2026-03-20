@@ -78,9 +78,6 @@ echo "✅ New app created successfully with ID: $APP_ID"
 getAppFolder "$ACCESS_TOKEN" "$SERVER_ID" "$APP_ID"
 echo "App folder name: $APP_FOLDER_NAME"
 
-CLOUDWAYS_API_KEY=$(get_1pass_var "Servers" "Cloudways" "api_key")
-set_github_secret "CLOUDWAYS_API_KEY" "$CLOUDWAYS_API_KEY"
-
 set_github_var "CLOUDWAYS_APP_FOLDER" "$APP_FOLDER_NAME"
 set_github_var "CLOUDWAYS_SERVER_IP" "$SERVER_IP"
 set_github_var "CLOUDWAYS_SERVER_ID" "$SERVER_ID"

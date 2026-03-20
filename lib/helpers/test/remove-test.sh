@@ -2,6 +2,7 @@
 
 source "${BREW_PREFIX}/libexec/lib/helpers/check-public-folder.sh"
 source "${BREW_PREFIX}/libexec/lib/helpers/env/get-github-var.sh"
+source "${BREW_PREFIX}/libexec/lib/helpers/env/get-1pass-var.sh"
 check_public_folder
 
 removeTest() {

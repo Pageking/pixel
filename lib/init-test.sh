@@ -25,6 +25,13 @@ if [[ ! "$PROJECT_NAME" =~ ^[a-z0-9-]+$ ]]; then
   exit 1
 fi
 
+CORE_VERSION=$(get_github_var "CORE_VERSION")
+if [[ -n "$CORE_VERSION" ]]; then
+  echo "📌 Using core version '$CORE_VERSION' from GitHub variable..."
+else
+  echo "⚠️ No core version found in GitHub variable. You can set it using 'pixel set-core-version' command."
+  exit 1
+fi
 DB_NAME="${PROJECT_NAME}"
 DB_USER="${DB_NAME}_user"
 DB_PASS="$(openssl rand -base64 12)"
@@ -88,8 +95,8 @@ plesk ext wp-toolkit --install \
     -db-user $DB_USER \
     -db-password $DB_PASS
 
-# Clone main theme into created 
-git clone $GIT_REPO $TARGET_DIR/pk-theme
+# Clone main theme into created domain
+git clone -b $CORE_VERSION $GIT_REPO $TARGET_DIR/pk-theme
 
 git clone -b test git@github.com-info:$(jq -r '.github.org' "$CONFIG_PATH")/${PROJECT_NAME}.git /var/www/vhosts/${PROJECT_NAME}.${DOMAIN}/httpdocs/wp-content/themes/$(jq -r '.github.template_repo' "$CONFIG_PATH")
 EOF
