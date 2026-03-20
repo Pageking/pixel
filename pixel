@@ -64,6 +64,15 @@ case "$COMMAND" in
 	source "${BREW_PREFIX}/libexec/lib/helpers/test/test-pull-main.sh"
 	test_pull_main
 	;;
+  test-set-core-version)
+  	if [[ $# -ne 1 ]]; then
+		echo "❌ Usage: pixel test-set-core-version <version_tag>"
+		exit 1
+	fi
+	source "${BREW_PREFIX}/libexec/lib/helpers/test/test-set-core-version.sh"
+	NEW_TAG="$1"
+	test_set_core_version "$NEW_TAG"
+	;;
   remove-test)
 	source "${BREW_PREFIX}/libexec/lib/helpers/test/remove-test.sh"
 	removeTest
