@@ -11,7 +11,7 @@ if [[ ! "$PROJECT_NAME" =~ ^[a-z0-9-]+$ ]]; then
   exit 1
 fi
 
-cd "wp-content/themes"
+cd "wp-content/themes" || exit 1
 
 if [ -d "pk-theme" ];
 then
@@ -52,9 +52,16 @@ until git ls-remote "https://github.com/$GITHUB_ORG/$PROJECT_NAME.git" | grep -q
   sleep 1
 done
 
+source "${BREW_PREFIX}/libexec/lib/helpers/env/get-core-version.sh"
+CORE_VERSION=$(get_core_version)
+if [[ -n "$CORE_VERSION" ]]; then
+  echo "📌 Setting core version to '$CORE_VERSION' in GitHub variable..."
+  gh variable set "CORE_VERSION" --body "$CORE_VERSION" --repo "$GITHUB_ORG/$PROJECT_NAME"
+fi
+
 CLONE_DIR="pk-theme-child"
 git clone "https://github.com/$GITHUB_ORG/$PROJECT_NAME.git" "$CLONE_DIR"
-cd "$CLONE_DIR"
+cd "$CLONE_DIR" || exit 1
 
 # Rename and push branches
 git checkout -b development
