@@ -12,11 +12,12 @@ source "${BREW_PREFIX}/libexec/lib/helpers/prod/get-cw-bearer.sh"
 source "${BREW_PREFIX}/libexec/lib/helpers/prod/cw-generate-git-ssh.sh"
 source "${BREW_PREFIX}/libexec/lib/helpers/prod/cw-clone-project-repo.sh"
 source "${BREW_PREFIX}/libexec/lib/helpers/prod/cw-clone-main-repo.sh"
+source "${BREW_PREFIX}/libexec/lib/helpers/prod/cw-configure-php-fpm.sh"
 check_public_folder
 get_cw_bearer
 
 # SELECT SERVER
-SERVERS=$(curl -s GET "https://api.cloudways.com/api/v1/server" \
+SERVERS=$(curl -s GET "https://api.cloudways.com/api/v2/server" \
   -H "Authorization: Bearer $ACCESS_TOKEN")
 
 select server in $(echo "$SERVERS" | jq -r '.servers[].label'); 
@@ -41,7 +42,7 @@ while true; do
 	fi
 done
 
-NEW_APP=$(curl -s POST "https://api.cloudways.com/api/v1/app" \
+NEW_APP=$(curl -s POST "https://api.cloudways.com/api/v2/app" \
 	-H "Authorization: Bearer $ACCESS_TOKEN" \
 	-H "Content-Type: application/json" \
 	-d "{
@@ -61,7 +62,7 @@ OP_ID=$(echo "$NEW_APP" | jq -r '.operation_id')
 echo "Operation ID: $OP_ID"
 
 while true; do
-	APP_STATUS=$(curl -s GET "https://api.cloudways.com/api/v1/operation/$OP_ID" \
+	APP_STATUS=$(curl -s GET "https://api.cloudways.com/api/v2/operation/$OP_ID" \
 		-H "Authorization: Bearer $ACCESS_TOKEN")
 
 	if [ "$(echo "$APP_STATUS" | jq -r '.operation.is_completed')" != "0" ]; then
@@ -74,6 +75,8 @@ while true; do
 done
 
 echo "✅ New app created successfully with ID: $APP_ID"
+
+cw_configure_php_fpm "$ACCESS_TOKEN" "$SERVER_ID" "$APP_ID"
 
 getAppFolder "$ACCESS_TOKEN" "$SERVER_ID" "$APP_ID"
 echo "App folder name: $APP_FOLDER_NAME"

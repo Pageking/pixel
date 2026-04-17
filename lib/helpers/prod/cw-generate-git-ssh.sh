@@ -12,7 +12,7 @@ cwGenerateGitSSH() {
 	SERVER_ID=$(get_github_var "CLOUDWAYS_SERVER_ID")
 	APP_ID=$(get_github_var "CLOUDWAYS_APP_ID")
 
-	local GENERATE_KEY=$(curl -s -X POST "https://api.cloudways.com/api/v1/git/generateKey" \
+	local GENERATE_KEY=$(curl -s -X POST "https://api.cloudways.com/api/v2/git/generateKey" \
 		-H "Authorization: Bearer $1" \
 		-H "Content-Type: application/json" \
 		-d "{
@@ -20,7 +20,7 @@ cwGenerateGitSSH() {
 			\"app_id\": \"$APP_ID\"
 	}")
 
-	local CW_GIT_SSH_KEY=$(curl -s -X GET "https://api.cloudways.com/api/v1/git/key" \
+	local CW_GIT_SSH_KEY=$(curl -s -X GET "https://api.cloudways.com/api/v2/git/key" \
 		-H "Authorization: Bearer $1" \
 		-H "Content-Type: application/json" \
 		-d "{
