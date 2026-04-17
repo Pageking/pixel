@@ -14,7 +14,7 @@ cwCloneProjectRepo() {
 	SERVER_ID=$(get_github_var "CLOUDWAYS_SERVER_ID")
 	APP_ID=$(get_github_var "CLOUDWAYS_APP_ID")
 
-	CW_CLONE_THEME=$(curl -s -X POST "https://api.cloudways.com/api/v1/git/clone" \
+	CW_CLONE_THEME=$(curl -s -X POST "https://api.cloudways.com/api/v2/git/clone" \
 	-H "Authorization: Bearer $1" \
 	-H "Content-Type: application/json" \
 	-d "{
