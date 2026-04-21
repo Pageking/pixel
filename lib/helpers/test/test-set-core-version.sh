@@ -57,6 +57,7 @@ test_set_core_version() {
 		git config --global --add safe.directory ${THEME_DIR}
 		git fetch --all
 		git checkout ${NEW_VERSION}
+		git submodule update --init
 	'
 EOF
 	echo "✅ Core version set to '$NEW_VERSION' on test environment."
