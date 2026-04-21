@@ -35,7 +35,7 @@ MAIN_REPO=$(get_1pass_var "Servers" "GitHub" "main_repo")
 TEMPLATE_REPO=$(get_1pass_var "Servers" "GitHub" "template_repo")
 
 echo "📦 Pulling '$MAIN_REPO'..."
-git clone "https://github.com/$GITHUB_ORG/$MAIN_REPO.git"
+git clone --recurse-submodules "https://github.com/$GITHUB_ORG/$MAIN_REPO.git"
 
 echo "📦 Creating repo '$PROJECT_NAME' from template '$TEMPLATE_REPO'..."
 

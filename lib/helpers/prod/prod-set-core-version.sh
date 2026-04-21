@@ -42,6 +42,7 @@ prod_set_core_version() {
 	cd applications/$APP_FOLDER/public_html/wp-content/themes/pk-theme || exit 1
 	git fetch --all
 	git checkout $CORE_VERSION
+	git submodule update --init
 EOF
 
 	echo "✅ Main theme clone successful"
