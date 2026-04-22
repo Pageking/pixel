@@ -30,10 +30,14 @@ clone_project() {
 	if [[ -n "${1:-}" ]]; then
 		# Project name provided directly — skip the interactive menu
 		SELECTED_REPO="$1"
+		if ! gh repo view "$GITHUB_ORG/$SELECTED_REPO" --json name &>/dev/null; then
+			echo "❌ Error: Repository '$GITHUB_ORG/$SELECTED_REPO' does not exist or is not accessible."
+			exit 1
+		fi
 		echo "📌 Using project: '$SELECTED_REPO'"
 	else
 		# Fetch all repos for the org and present a select menu
-		echo "🔍 Fetching repositories for organisation '$GITHUB_ORG'..."
+		echo "🔍 Fetching repositories..."
 		local REPO_NAMES
 		REPO_NAMES=$(gh search repos --owner "$GITHUB_ORG" -L 100 --json name | jq -r '.[].name' | sort)
 
@@ -53,7 +57,8 @@ clone_project() {
 
 	# Clone child theme first — it holds the GitHub variables needed below
 	echo "📦 Cloning '$SELECTED_REPO' into wp-content/themes/pk-theme-child..."
-	git clone "https://github.com/$GITHUB_ORG/$SELECTED_REPO.git" "wp-content/themes/pk-theme-child"
+	git clone "https://github.com/$GITHUB_ORG/$SELECTED_REPO.git" "wp-content/themes/pk-theme-child" &>/dev/null;
+	echo "✅ Cloned child theme '$SELECTED_REPO'"
 
 	# Read CORE_VERSION from the project repo's GitHub variables
 	echo "🔍 Reading CORE_VERSION from GitHub variables..."
@@ -66,13 +71,12 @@ clone_project() {
 		exit 1
 	fi
 
-	echo "📌 Core version: '$CORE_VERSION'"
-
 	# Clone pk-theme at the pinned version with all submodules
 	echo "📦 Cloning '$MAIN_REPO' at version '$CORE_VERSION' (with submodules)..."
 	git clone -b "$CORE_VERSION" --recurse-submodules \
 		"https://github.com/$GITHUB_ORG/$MAIN_REPO.git" \
-		"wp-content/themes/pk-theme"
+		"wp-content/themes/pk-theme" &>/dev/null;
+	echo "✅ Cloned pk-theme at version '$CORE_VERSION'"
 
 	# Offer an initial sync if connection strings are available
 	local TEST_CONN PROD_CONN
@@ -89,7 +93,7 @@ clone_project() {
 		echo "ℹ️  No sync connection strings found. Skipping initial sync."
 	else
 		echo ""
-		echo "🔃 Do you want to do an initial sync?"
+		echo "🔃 Do you want to do an initial sync from a remote server?"
 		local SYNC_CHOICE
 		select SYNC_CHOICE in "${sync_options[@]}"; do
 			case "$SYNC_CHOICE" in
@@ -116,6 +120,6 @@ clone_project() {
 
 	echo ""
 	echo "✅ Project '$SELECTED_REPO' is ready!"
-	echo "   📁 wp-content/themes/pk-theme        → $MAIN_REPO @ $CORE_VERSION"
+	echo "   📁 wp-content/themes/pk-theme        → @ $CORE_VERSION"
 	echo "   📁 wp-content/themes/pk-theme-child   → $SELECTED_REPO"
 }
