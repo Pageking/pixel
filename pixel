@@ -35,6 +35,10 @@ case "$COMMAND" in
 	source "${BREW_PREFIX}/libexec/lib/helpers/update-pixel.sh"
 	update_pixel
 	;;
+  clone-project)
+    source "${BREW_PREFIX}/libexec/lib/helpers/clone-project.sh"
+    clone_project "$@"
+    ;;
   init)
     source "${BREW_PREFIX}/libexec/lib/init.sh"
     ;;
@@ -140,6 +144,7 @@ case "$COMMAND" in
     echo "Usage: pixel <command>"
 	echo ""
     echo "Initialize Commands:"
+    echo "    clone-project [project-name]		Clone an existing project and set up local dev environment"
     echo "    init					Initialize GitHub repo + dev environment"
     echo "    init-test					Initialize test environment on Plesk server"
     echo "    init-prod					Initialize production environment on Cloudways server"
