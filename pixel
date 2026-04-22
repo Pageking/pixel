@@ -49,13 +49,8 @@ case "$COMMAND" in
 	source "${BREW_PREFIX}/libexec/lib/init-prod.sh"
 	;;
   prod-set-core-version)
-  	if [[ $# -ne 1 ]]; then
-		echo "❌ Usage: pixel prod-set-core-version <version_tag>"
-		exit 1
-	fi
 	source "${BREW_PREFIX}/libexec/lib/helpers/prod/prod-set-core-version.sh"
-	NEW_TAG="$1"
-	prod_set_core_version "$NEW_TAG"
+	prod_set_core_version
 	;;
   sync-dev-to-test|sync-dev-test)
 	source "${BREW_PREFIX}/libexec/lib/helpers/test/sync-dev-to-test.sh"
@@ -78,13 +73,8 @@ case "$COMMAND" in
 	test_pull_main
 	;;
   test-set-core-version)
-  	if [[ $# -ne 1 ]]; then
-		echo "❌ Usage: pixel test-set-core-version <version_tag>"
-		exit 1
-	fi
 	source "${BREW_PREFIX}/libexec/lib/helpers/test/test-set-core-version.sh"
-	NEW_TAG="$1"
-	test_set_core_version "$NEW_TAG"
+	test_set_core_version
 	;;
   remove-test)
 	source "${BREW_PREFIX}/libexec/lib/helpers/test/remove-test.sh"
