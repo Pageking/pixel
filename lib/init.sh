@@ -3,7 +3,6 @@
 source "${BREW_PREFIX}/libexec/lib/helpers/check-public-folder.sh"
 check_public_folder
 
-source "${BREW_PREFIX}/libexec/lib/helpers/get-project-name.sh"
 PROJECT_NAME=$(basename "$(dirname "$(dirname "$PWD")")")
 
 if [[ ! "$PROJECT_NAME" =~ ^[a-z0-9-]+$ ]]; then
