@@ -3,5 +3,5 @@ list_mira() {
     echo "Available Mira Blocks:"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
-	ls -1 "$MIRA_LAYOUTS" | grep "mira_" | sed 's/^/  - /'
+	find "$MIRA_LAYOUTS" -maxdepth 1 -name "mira_*" -exec basename {} \; | sort | sed 's/^/  - /'
 }

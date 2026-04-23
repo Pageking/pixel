@@ -29,12 +29,11 @@ do
 	SERVER_ID=$(echo "$SERVER_DETAILS" | jq -r '.id')
 	SERVER_IP=$(echo "$SERVER_DETAILS" | jq -r '.public_ip')
 	SERVER_USER=$(echo "$SERVER_DETAILS" | jq -r '.master_user')
-	SERVER_PASS=$(echo "$SERVER_DETAILS" | jq -r '.master_password')
 	break;
 done
 
 while true; do
-	read -p "Cloudways application label: " CW_LABEL
+	read -rp "Cloudways application label: " CW_LABEL
 	if [ -n "$CW_LABEL" ]; then
 		break
 	else
@@ -94,7 +93,7 @@ cwCloneProjectRepo "$ACCESS_TOKEN"
 
 cwCloneMainRepo "$SERVER_USER"
 
-read -p "Do you also want to sync the plugins and database? [y/N]: " sync_to_prod
+read -rp "Do you also want to sync the plugins and database? [y/N]: " sync_to_prod
 if [[ "$sync_to_prod" =~ ^[Yy]$ ]]; then
 	source "${BREW_PREFIX}/libexec/lib/helpers/prod/sync-dev-to-prod.sh"
 	sync_dev_to_prod

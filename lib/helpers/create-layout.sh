@@ -1,5 +1,5 @@
 create_layout() {
-	local layout_slug layyout_label layout_category
+	local layout_slug layout_label layout_category
 	local TEMPLATE_DIR="$HOME/.config/pixel/templates"
 
 	if ! [[ -d "$TEMPLATE_DIR" ]]; then
@@ -7,7 +7,7 @@ create_layout() {
 	fi
 
 	# Validate slug parameter
-	if ! [[ -n "$1" ]]; then
+	if [[ -z "$1" ]]; then
 		echo "🤦 No layout slug given."
 		exit 1
 	fi
@@ -20,7 +20,7 @@ create_layout() {
 	layout_slug="$1"
 
 	# Validate label parameter
-	if ! [[ -n "$2" ]]; then
+	if [[ -z "$2" ]]; then
 		echo "🤦 No layout label given."
 		exit 1
 	fi
@@ -28,7 +28,7 @@ create_layout() {
 	layout_label="$2"
 
 	# Set default category if not provided
-	if ! [[ -n "$3" ]]; then
+	if [[ -z "$3" ]]; then
 		layout_category='Content'
 	else
 		layout_category="$3"

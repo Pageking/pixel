@@ -104,7 +104,7 @@ echo "✅ Domain created"
 
 if [[ -f "wp-cli.yml" ]]; then
 	echo "🔄 Syncing wp-cli.yml to server..."
-	scp wp-cli.yml ${SERVER}:/var/www/vhosts/${PROJECT_NAME}.${DOMAIN}/httpdocs/
+	scp wp-cli.yml "${SERVER}:/var/www/vhosts/${PROJECT_NAME}.${DOMAIN}/httpdocs/"
 else 
 	echo "⚠️ No wp-cli.yml file found in the current folder. Skipping wp-cli.yml upload."
 fi

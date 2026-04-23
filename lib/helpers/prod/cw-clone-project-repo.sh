@@ -14,7 +14,7 @@ cwCloneProjectRepo() {
 	SERVER_ID=$(get_github_var "CLOUDWAYS_SERVER_ID")
 	APP_ID=$(get_github_var "CLOUDWAYS_APP_ID")
 
-	CW_CLONE_THEME=$(curl -s -X POST "https://api.cloudways.com/api/v2/git/clone" \
+	curl -s -X POST "https://api.cloudways.com/api/v2/git/clone" \
 	-H "Authorization: Bearer $1" \
 	-H "Content-Type: application/json" \
 	-d "{
@@ -23,5 +23,5 @@ cwCloneProjectRepo() {
 		\"git_url\": \"git@github.com:Pageking/$PROJECT_NAME.git\",
 		\"branch_name\": \"production\",
 		\"deploy_path\": \"wp-content/themes/pk-theme-child/\"
-	}")
+	}"
 }

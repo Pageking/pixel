@@ -23,7 +23,7 @@ cwCloneMainRepo() {
 		CORE_VERSION="main"
 	fi
 
-	ssh -o IgnoreUnknown=UseKeychain $SERVER_USER@$SERVER_IP bash <<EOF
+	ssh -o IgnoreUnknown=UseKeychain "$SERVER_USER@$SERVER_IP" bash <<EOF
 	set -e
 	cd applications/$APP_FOLDER/public_html/wp-content/themes/
 	git clone -b $CORE_VERSION --recurse-submodules $GIT_REPO

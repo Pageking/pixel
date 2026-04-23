@@ -6,7 +6,7 @@ source "${BREW_PREFIX}/libexec/lib/helpers/env/get-1pass-var.sh"
 check_public_folder
 
 removeTest() {
-	read -p "⚠️ Are you sure you want to remove the test enviroment? ⚠️ [y/N]: " confirm_remove_test
+	read -rp "⚠️ Are you sure you want to remove the test enviroment? ⚠️ [y/N]: " confirm_remove_test
 	if [[ ! "$confirm_remove_test" =~ ^[Yy]$ ]]; then
 		echo "❌ Aborting removal of test environment."
 		exit 1
