@@ -9,7 +9,7 @@ EXAMPLE_PATH="${BREW_PREFIX}/config/config.example.json"
 
 if [[ ! -f "$CONFIG_PATH" ]]; then
 	echo "❌ Config not found at $CONFIG_PATH"
-	read -p "❔ Create config from example? [y/N]: " create_config
+	read -rp "❔ Create config from example? [y/N]: " create_config
 	if [[ "$create_config" =~ ^[Yy]$ ]]; then
     	mkdir -p "$(dirname "$CONFIG_PATH")"
     	cp "$EXAMPLE_PATH" "$CONFIG_PATH"
@@ -112,8 +112,8 @@ case "$COMMAND" in
   mira)
 	SUBCOMMAND="$1"
 	shift || true
-	MIRA_LAYOUTS="$HOME/.config/pixel/mira/flex/content/layouts"
-	MIRA_COMPONENTS="$HOME/.config/pixel/mira/flex/components"
+	export MIRA_LAYOUTS="$HOME/.config/pixel/mira/flex/content/layouts"
+	export MIRA_COMPONENTS="$HOME/.config/pixel/mira/flex/components"
 	case "$SUBCOMMAND" in 
 		setup)
 			source "${BREW_PREFIX}/libexec/lib/helpers/mira/setup.sh"
