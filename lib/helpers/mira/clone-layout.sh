@@ -40,9 +40,7 @@ clone_layout() {
 
 	# Copy the block
     echo "📦 Cloning $layout_name..."
-    rsync -r --exclude="components.json" "$layout_path/" "$dest_path/"
-
-	if [ $? -eq 0 ]; then
+    if rsync -r --exclude="components.json" "$layout_path/" "$dest_path/"; then
         echo "Copied to $dest_path"
         echo "🎉 Done! Block $layout_name is now available."
     else
