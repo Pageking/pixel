@@ -1,14 +1,15 @@
 cw_configure_php_fpm() {
+	local ACCESS_TOKEN SERVER_ID APP_ID FPM_SETTING FPM_RESPONSE
 	if [[ $# -ne 3 ]]; then
 		echo "❌ Usage: cw_configure_php_fpm <access_token> <server_id> <app_id>"
 		exit 1
 	fi
 
-	local ACCESS_TOKEN="$1"
-	local SERVER_ID="$2"
-	local APP_ID="$3"
+	ACCESS_TOKEN="$1"
+	SERVER_ID="$2"
+	APP_ID="$3"
 
-	local FPM_SETTING=$(base64 -w 0 <<'EOF'
+	FPM_SETTING=$(base64 -w 0 <<'EOF'
 ;php_admin_flag[log_errors] = on
 ;php_admin_value[memory_limit] = 32M
 ;php_admin_value[max_execution_time] = 120
@@ -25,7 +26,6 @@ EOF
 
 	echo "🔧 Configuring PHP-FPM settings..."
 
-	local FPM_RESPONSE
 	FPM_RESPONSE=$(curl -s -X POST "https://api.cloudways.com/api/v2/app/manage/fpm_setting" \
 		-H "Authorization: Bearer $ACCESS_TOKEN" \
 		-H "Content-Type: application/x-www-form-urlencoded" \
