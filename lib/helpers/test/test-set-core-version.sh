@@ -53,7 +53,7 @@ test_set_core_version() {
 	fi
 
 	echo "You are about to set the core version to '$CORE_VERSION' on test."
-	read -p "⚠️ Are you sure? ⚠️ [y/N]: " confirm_set_core_version
+	read -rp "⚠️ Are you sure? ⚠️ [y/N]: " confirm_set_core_version
 	if [[ ! "$confirm_set_core_version" =~ ^[Yy]$ ]]; then
 		echo "❌ Aborting setting core version."
 		exit 1

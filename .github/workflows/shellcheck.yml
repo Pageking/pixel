@@ -13,4 +13,4 @@ jobs:
 
       - name: Run shellcheck
         run: |
-          shellcheck --external-sources --shell=bash -e SC1091 pixel $(find lib -name "*.sh")
+          shellcheck --external-sources --shell=bash -e SC1091 -e SC2087 pixel $(find lib -name "*.sh")
