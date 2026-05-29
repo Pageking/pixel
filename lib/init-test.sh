@@ -3,6 +3,7 @@ IFS=$'\n'
 set -eou pipefail
 
 source "${BREW_PREFIX}/libexec/lib/helpers/check-public-folder.sh"
+source "${BREW_PREFIX}/libexec/lib/helpers/check-ssh-connection.sh"
 source "${BREW_PREFIX}/libexec/lib/helpers/env/get-github-var.sh"
 source "${BREW_PREFIX}/libexec/lib/helpers/env/set-github-var.sh"
 source "${BREW_PREFIX}/libexec/lib/helpers/env/get-1pass-var.sh"
@@ -46,6 +47,15 @@ PLESK_PASS=$(openssl rand -base64 16)
 # === Save credentials in 1Password ===
 OP_VAULT="Credentials"  # <-- Change to your actual vault name or ID
 OP_ITEM_NAME="Plesk: ${PROJECT_NAME}.${DOMAIN}"
+OP_ITEM_CREATED=false
+
+cleanup_1pass_item() {
+  if [[ "$OP_ITEM_CREATED" == true ]]; then
+    echo "🧹 Removing 1Password item '$OP_ITEM_NAME' due to error..."
+    op item delete "$OP_ITEM_NAME" --vault "$OP_VAULT" 2>/dev/null || true
+  fi
+}
+trap cleanup_1pass_item ERR
 
 # Check if item already exists
 EXISTING_ITEM=$(op item list --vault "$OP_VAULT" --categories=Login --format=json | jq -r --arg name "$OP_ITEM_NAME" '.[] | select(.title == $name) | .id')
@@ -64,10 +74,12 @@ else
     "notes=Auto-generated on $(date)" \
     title="$OP_ITEM_NAME"
 
+  OP_ITEM_CREATED=true
   echo "✅ Credentials saved to 1Password vault '$OP_VAULT' as '$OP_ITEM_NAME'"
 fi
 
 echo "👷 Creating domain on Plesk with project name '$PROJECT_NAME'"
+check_ssh_connection "$SERVER"
 ssh -o IgnoreUnknown=UseKeychain "$SERVER" bash <<EOF
 # Exit on first failure
 set -e 
@@ -113,7 +125,8 @@ echo "🔄 Syncing wp-migrate-db-pro plugin to server..."
 rsync -ravz "wp-content/plugins/wp-migrate-db-pro/" "${SERVER}:/var/www/vhosts/${PROJECT_NAME}.${DOMAIN}/httpdocs/wp-content/plugins/wp-migrate-db-pro/"
 
 # FIX: Change to 1Password dev team account
-sshpass -p "${PLESK_PASS}" ssh -T -o IgnoreUnknown=UseKeychain "${PLESK_USER}@${IP}" <<EOF
+check_ssh_connection "${PLESK_USER}@${IP}" "$PLESK_PASS" 5 10
+sshpass -p "${PLESK_PASS}" ssh -T -o IgnoreUnknown=UseKeychain -o PreferredAuthentications=password -o PubkeyAuthentication=no -o IdentitiesOnly=yes "${PLESK_USER}@${IP}" <<EOF
 	set -e
 	bash -lc '
 		cd httpdocs
