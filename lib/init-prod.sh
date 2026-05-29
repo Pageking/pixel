@@ -6,6 +6,7 @@ source "${BREW_PREFIX}/libexec/lib/helpers/env/get-github-var.sh"
 source "${BREW_PREFIX}/libexec/lib/helpers/env/set-github-var.sh"
 source "${BREW_PREFIX}/libexec/lib/helpers/env/set-github-secret.sh"
 source "${BREW_PREFIX}/libexec/lib/helpers/check-public-folder.sh"
+source "${BREW_PREFIX}/libexec/lib/helpers/check-ssh-connection.sh"
 source "${BREW_PREFIX}/libexec/lib/helpers/get-project-name.sh"
 source "${BREW_PREFIX}/libexec/lib/helpers/prod/get-cw-app-folder.sh"
 source "${BREW_PREFIX}/libexec/lib/helpers/prod/get-cw-bearer.sh"
@@ -31,6 +32,8 @@ do
 	SERVER_USER=$(echo "$SERVER_DETAILS" | jq -r '.master_user')
 	break;
 done
+
+check_ssh_connection "$SERVER_USER@$SERVER_IP"
 
 while true; do
 	read -rp "Cloudways application label: " CW_LABEL
@@ -88,10 +91,8 @@ set_github_var "CLOUDWAYS_SERVER_LABEL" "$SERVER_LABEL"
 set_github_var "CLOUDWAYS_APP_ID" "$APP_ID"
 
 cwGenerateGitSSH "$ACCESS_TOKEN"
-
-cwCloneProjectRepo "$ACCESS_TOKEN"
-
 cwCloneMainRepo "$SERVER_USER"
+cwCloneProjectRepo "$ACCESS_TOKEN"
 
 read -rp "Do you also want to sync the plugins and database? [y/N]: " sync_to_prod
 if [[ "$sync_to_prod" =~ ^[Yy]$ ]]; then
