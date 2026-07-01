@@ -122,7 +122,15 @@ else
 fi
 
 echo "🔄 Syncing wp-migrate-db-pro plugin to server..."
-rsync -ravz "wp-content/plugins/wp-migrate-db-pro/" "${SERVER}:/var/www/vhosts/${PROJECT_NAME}.${DOMAIN}/httpdocs/wp-content/plugins/wp-migrate-db-pro/"
+rsync -ravz --no-owner --no-group "wp-content/plugins/wp-migrate-db-pro/" "${SERVER}:/var/www/vhosts/${PROJECT_NAME}.${DOMAIN}/httpdocs/wp-content/plugins/wp-migrate-db-pro/"
+
+echo "🔧 Fixing ownership of wp-migrate-db-pro to match the rest of the vhost..."
+VHOST_ROOT="/var/www/vhosts/${PROJECT_NAME}.${DOMAIN}/httpdocs"
+ssh -o IgnoreUnknown=UseKeychain "$SERVER" bash <<EOF
+set -e
+OWNER_GROUP=\$(stat -c '%U:%G' "${VHOST_ROOT}/wp-content")
+chown -R "\$OWNER_GROUP" "${VHOST_ROOT}/wp-content/plugins/wp-migrate-db-pro"
+EOF
 
 # FIX: Change to 1Password dev team account
 check_ssh_connection "${PLESK_USER}@${IP}" "$PLESK_PASS" 5 10
