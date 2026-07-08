@@ -18,7 +18,14 @@ clone_layout() {
 		layout_name="mira_$layout_name"
 	fi
 
-	layout_path="$MIRA_LAYOUTS/$layout_name"
+	if [[ "$layout_name" =~ ^mira_sidebar_ ]]; then
+		layout_path="$MIRA_SIDEBAR_LAYOUTS/$layout_name"
+		dest_path="wp-content/themes/pk-theme-child/flex/sidebar/layouts/$layout_name"
+	else
+		layout_path="$MIRA_LAYOUTS/$layout_name"
+		dest_path="wp-content/themes/pk-theme-child/flex/content/layouts/$layout_name"
+	fi
+
 	if [ ! -d "$layout_path" ]; then
         echo "❓ Block '$layout_name' not found in Mira repository"
         echo ""
@@ -26,7 +33,6 @@ clone_layout() {
         exit 1
     fi
 
-	dest_path="wp-content/themes/pk-theme-child/flex/content/layouts/$layout_name"
 	# Check if block already exists
     if [ -d "$dest_path" ]; then
         echo "⚠️ Layout '$layout_name' already exists in this project"

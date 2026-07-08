@@ -113,6 +113,7 @@ case "$COMMAND" in
 	SUBCOMMAND="$1"
 	shift || true
 	export MIRA_LAYOUTS="$HOME/.config/pixel/mira/flex/content/layouts"
+	export MIRA_SIDEBAR_LAYOUTS="$HOME/.config/pixel/mira/flex/sidebar/layouts"
 	export MIRA_COMPONENTS="$HOME/.config/pixel/mira/flex/components"
 	case "$SUBCOMMAND" in 
 		setup)
