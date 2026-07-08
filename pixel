@@ -114,7 +114,8 @@ case "$COMMAND" in
 	shift || true
 	export MIRA_LAYOUTS="$HOME/.config/pixel/mira/flex/content/layouts"
 	export MIRA_COMPONENTS="$HOME/.config/pixel/mira/flex/components"
-	case "$SUBCOMMAND" in 
+	export MIRA_POST_LAYOUTS="$HOME/.config/pixel/mira/flex/content/post-layouts"
+	case "$SUBCOMMAND" in
 		setup)
 			source "${BREW_PREFIX}/libexec/lib/helpers/mira/setup.sh"
 			setup_mira
@@ -126,6 +127,10 @@ case "$COMMAND" in
 		clone)
 			source "${BREW_PREFIX}/libexec/lib/helpers/mira/clone-layout.sh"
 			clone_layout "$@"
+			;;
+		clone-post)
+			source "${BREW_PREFIX}/libexec/lib/helpers/mira/clone-post-layout.sh"
+			clone_post_layout "$@"
 			;;
 		update)
 			source "${BREW_PREFIX}/libexec/lib/helpers/mira/update.sh"
