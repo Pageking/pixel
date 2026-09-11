@@ -76,7 +76,6 @@ done
 git checkout development
 
 cat << EOF > .npmrc
-site=http://$PROJECT_NAME.local
 engine-strict=true
 EOF
 
