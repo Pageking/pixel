@@ -109,6 +109,10 @@ case "$COMMAND" in
 	source "${BREW_PREFIX}/libexec/lib/helpers/env/renew-connection-info.sh"
 	renew_connection_info "$1"
 	;;
+  dev)
+	source "${BREW_PREFIX}/libexec/lib/helpers/env/dev.sh"
+	dev
+	;;
   mira)
 	SUBCOMMAND="$1"
 	shift || true
