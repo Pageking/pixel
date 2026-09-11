@@ -65,7 +65,7 @@ cd "$CLONE_DIR" || exit 1
 # Rename and push branches
 git checkout -b development
 git push -u origin development
-gh api -X PATCH "repos/$GITHUB_ORG/$PROJECT_NAME" -f default_branch="development">/dev/null
+gh api -X PATCH "repos/$GITHUB_ORG/$PROJECT_NAME" -f default_branch="test">/dev/null
 git push origin --delete main 2>/dev/null || true
 
 for BRANCH in test staging production; do
@@ -74,4 +74,7 @@ for BRANCH in test staging production; do
 done
 
 git checkout development
+
+echo "proxy=http://$PROJECT_NAME.local" > .npmrc
+
 echo "✅ Project '$PROJECT_NAME' initialized with branches: development, test, staging, production"
