@@ -75,6 +75,9 @@ done
 
 git checkout development
 
-echo "proxy=http://$PROJECT_NAME.local" > .npmrc
+cat << EOF > .npmrc
+site=http://$PROJECT_NAME.local
+engine-strict=true
+EOF
 
 echo "✅ Project '$PROJECT_NAME' initialized with branches: development, test, staging, production"
