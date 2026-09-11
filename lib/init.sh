@@ -75,8 +75,4 @@ done
 
 git checkout development
 
-cat << EOF > .npmrc
-engine-strict=true
-EOF
-
 echo "✅ Project '$PROJECT_NAME' initialized with branches: development, test, staging, production"
