@@ -109,6 +109,14 @@ case "$COMMAND" in
 	source "${BREW_PREFIX}/libexec/lib/helpers/env/renew-connection-info.sh"
 	renew_connection_info "$1"
 	;;
+  dev)
+	source "${BREW_PREFIX}/libexec/lib/helpers/env/dev.sh"
+	dev
+	;;
+  clean)
+	source "${BREW_PREFIX}/libexec/lib/helpers/env/clean.sh"
+	clean
+	;;
   mira)
 	SUBCOMMAND="$1"
 	shift || true
@@ -165,6 +173,10 @@ case "$COMMAND" in
     echo "    update                              Update the Mira repo in your /.config/ folder by doing: git pull origin."
     echo "    clone <block-name>                  Clone a specific layout from the Mira repo."
     echo "    clone-post <post-layout-name> <new-name>  Clone a specific post layout from the Mira repo."
+    echo ""
+    echo "Development Commands:"
+    echo "    dev                                 Start the local theme dev server (installs dependencies if needed)"
+    echo "    clean                               Remove node_modules and reinstall dependencies for the theme"
     echo ""
     echo "Create Commands:"
     echo "    create-layout <layout-slug> <layout-label> <layout-category>"
