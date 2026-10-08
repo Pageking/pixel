@@ -55,6 +55,14 @@ case "$COMMAND" in
 	source "${BREW_PREFIX}/libexec/lib/helpers/prod/prod-set-core-version.sh"
 	prod_set_core_version
 	;;
+  compare-plugin-version)
+	if [[ $# -ne 1 || ("$1" != "test" && "$1" != "prod") ]]; then
+		echo "❌ Usage: pixel compare-plugin-version <test|prod>"
+		exit 1
+	fi
+	source "${BREW_PREFIX}/libexec/lib/helpers/env/sync-wpmigrate-plugin.sh"
+	sync_wpmigrate_plugin "$1"
+	;;
   sync-dev-to-test|sync-dev-test)
 	source "${BREW_PREFIX}/libexec/lib/helpers/test/sync-dev-to-test.sh"
 	sync_dev_to_test "$@"
@@ -183,6 +191,7 @@ case "$COMMAND" in
     echo "                                        Creates a new layout in the layouts folder based on templates in the pixel repo."
     echo ""
     echo "Management Commands:"
+    echo "    compare-plugin-version <test|prod>  Compare local/remote wp-migrate-db-pro version and update whichever is older"
     echo "    set-core-version                    Sync GitHub CORE_VERSION variable with local pk-theme version"
     echo "    get-core-version                    Display the current local pk-theme version tag"
     echo "    test-set-core-version               Deploy CORE_VERSION to the test environment"

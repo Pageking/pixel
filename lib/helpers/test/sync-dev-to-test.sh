@@ -1,4 +1,5 @@
 source "${BREW_PREFIX}/libexec/lib/helpers/env/get-github-var.sh"
+source "${BREW_PREFIX}/libexec/lib/helpers/env/sync-wpmigrate-plugin.sh"
 
 sync_dev_to_test() {
 	read -rp "Are you sure you want to sync to the test server? [y/N]" sync_to_test
@@ -6,6 +7,8 @@ sync_dev_to_test() {
 		echo "Oké dan niet hè."
 		exit 0
 	fi
+
+	sync_wpmigrate_plugin "test" || { echo "❌ Aborting sync: wp-migrate-db-pro version mismatch unresolved."; exit 1; }
 
 	local MDB_CONN_STRING skip_plugins skip_database skip_media mdb_command
 
