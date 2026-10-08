@@ -79,6 +79,9 @@ Or
 > [!NOTE]
 > If the pk-theme is updated during development, the pk-theme on the test enviroment is out-of-sync with your local one. To update the pk-theme on the test enviroment, use the `pixel test-pull-main` command.
 
+> [!NOTE]
+> Both sync commands automatically compare your local `wp-migrate-db-pro` plugin version with the version on the test server before syncing, since a mismatch makes `wp migratedb` fail. If the versions differ, you'll be asked to confirm updating whichever side (local or test) is older. You can run this check manually at any time with `pixel compare-plugin-version test`.
+
 ## Deploying your project to Cloudways
 
 Whenever you need to deploy your project to Cloudways, you need to use the following command:
@@ -112,6 +115,9 @@ Or
 > `--no-plugins` : Skip Plugin synchronization
 > 
 > `--no-media` : Skip Media/Uploads synchronization
+
+> [!NOTE]
+> Both sync commands automatically compare your local `wp-migrate-db-pro` plugin version with the version on the production server before syncing, since a mismatch makes `wp migratedb` fail. If the versions differ, you'll be asked to confirm updating whichever side (local or production) is older. You can run this check manually at any time with `pixel compare-plugin-version prod`.
 
 ---
 
@@ -236,5 +242,6 @@ pixel create-layout <slug> <label> [category]
 pixel test-pull-main                      # Pull latest main branch on test environment
 pixel remove-test                         # Remove test environment from Plesk server
 pixel get-github-var <variable_name>     # Get a GitHub Actions variable
+pixel compare-plugin-version <test|prod>  # Compare local/remote wp-migrate-db-pro version and update whichever is older
 pixel -v (--version)                      # Display version information
 ```
