@@ -1,57 +1,66 @@
 source "${BREW_PREFIX}/libexec/lib/helpers/test/get-credentials.sh"
 source "${BREW_PREFIX}/libexec/lib/helpers/get-project-name.sh"
 source "${BREW_PREFIX}/libexec/lib/helpers/env/get-1pass-var.sh"
+source "${BREW_PREFIX}/libexec/lib/helpers/check-ssh-connection.sh"
+source "${BREW_PREFIX}/libexec/lib/helpers/env/version-compare.sh"
 
-get_remote_plugin_version_test() {
-	local slug="${1:?get_remote_plugin_version_test: plugin slug is required}"
-	local SERVER DOMAIN PROJECT_NAME SITE_DIR RESULT
+# wp-cli must run as the site's own Plesk user (not the root/SERVER SSH alias) — Plesk
+# does not recognize/permit `wp` commands over the root connection, matching the
+# PLESK_USER/PLESK_PASS + sshpass pattern already used for `wp` calls in lib/init-test.sh.
+#
+# Exports PLESK_USER, PLESK_PASS (via get_plesk_credentials) and WPM_TEST_IP on success.
+_wpmigrate_plugin_test_connect() {
+	local PROJECT_NAME
 
-	SERVER=$(get_1pass_var "Servers" "PK1" "server")
-	DOMAIN=$(get_1pass_var "Servers" "PK1" "domain")
 	PROJECT_NAME=$(get_project_name)
-
 	if [[ -z "$PROJECT_NAME" ]]; then
 		echo "❌ Could not determine project name" >&2
 		return 1
 	fi
 
-	SITE_DIR="/var/www/vhosts/${PROJECT_NAME}.${DOMAIN}/httpdocs"
+	WPM_TEST_IP=$(get_1pass_var "Servers" "PK1" "ip")
+	export WPM_TEST_IP
 
-	get_plesk_credentials "$PROJECT_NAME" "$DOMAIN" || { echo "❌ Failed to get Plesk credentials" >&2; return 1; }
+	# Redirect these helpers' informational stdout to stderr: callers capture this
+	# function's stdout via command substitution and must only see the plugin version.
+	get_plesk_credentials "$PROJECT_NAME" "$(get_1pass_var "Servers" "PK1" "domain")" >&2 || { echo "❌ Failed to get Plesk credentials" >&2; return 1; }
 
-	RESULT=$(ssh -T -o IgnoreUnknown=UseKeychain "${SERVER}" <<EOF
+	check_ssh_connection "${PLESK_USER}@${WPM_TEST_IP}" "$PLESK_PASS" 5 10 >&2
+}
+
+get_remote_plugin_version_test() {
+	local slug="${1:?get_remote_plugin_version_test: plugin slug is required}"
+	local RESULT
+
+	_wpmigrate_plugin_test_connect || return 1
+
+	RESULT=$(sshpass -p "${PLESK_PASS}" ssh -T -o IgnoreUnknown=UseKeychain -o PreferredAuthentications=password -o PubkeyAuthentication=no -o IdentitiesOnly=yes "${PLESK_USER}@${WPM_TEST_IP}" <<EOF
 	set -e
 	bash -lc '
-		cd ${SITE_DIR}
+		cd httpdocs
 		wp plugin get ${slug} --field=version
 	'
 EOF
 	) || { echo "❌ Could not read remote version for plugin '$slug' on test" >&2; return 1; }
+
+	RESULT=$(extract_version_string "$RESULT")
+	if [[ -z "$RESULT" ]]; then
+		echo "❌ Could not parse remote version for plugin '$slug' on test" >&2
+		return 1
+	fi
 
 	echo "$RESULT"
 }
 
 update_remote_plugin_test() {
 	local slug="${1:?update_remote_plugin_test: plugin slug is required}"
-	local SERVER DOMAIN PROJECT_NAME SITE_DIR
 
-	SERVER=$(get_1pass_var "Servers" "PK1" "server")
-	DOMAIN=$(get_1pass_var "Servers" "PK1" "domain")
-	PROJECT_NAME=$(get_project_name)
+	_wpmigrate_plugin_test_connect || return 1
 
-	if [[ -z "$PROJECT_NAME" ]]; then
-		echo "❌ Could not determine project name" >&2
-		return 1
-	fi
-
-	SITE_DIR="/var/www/vhosts/${PROJECT_NAME}.${DOMAIN}/httpdocs"
-
-	get_plesk_credentials "$PROJECT_NAME" "$DOMAIN" || { echo "❌ Failed to get Plesk credentials" >&2; return 1; }
-
-	ssh -T -o IgnoreUnknown=UseKeychain "${SERVER}" <<EOF
+	sshpass -p "${PLESK_PASS}" ssh -T -o IgnoreUnknown=UseKeychain -o PreferredAuthentications=password -o PubkeyAuthentication=no -o IdentitiesOnly=yes "${PLESK_USER}@${WPM_TEST_IP}" <<EOF
 	set -e
 	bash -lc '
-		cd ${SITE_DIR}
+		cd httpdocs
 		wp plugin update ${slug}
 	'
 EOF

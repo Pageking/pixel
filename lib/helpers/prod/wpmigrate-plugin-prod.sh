@@ -1,4 +1,5 @@
 source "${BREW_PREFIX}/libexec/lib/helpers/env/get-github-var.sh"
+source "${BREW_PREFIX}/libexec/lib/helpers/env/version-compare.sh"
 
 get_remote_plugin_version_prod() {
 	local slug="${1:?get_remote_plugin_version_prod: plugin slug is required}"
@@ -19,6 +20,12 @@ get_remote_plugin_version_prod() {
 	wp plugin get $slug --field=version
 EOF
 	) || { echo "❌ Could not read remote version for plugin '$slug' on production" >&2; return 1; }
+
+	RESULT=$(extract_version_string "$RESULT")
+	if [[ -z "$RESULT" ]]; then
+		echo "❌ Could not parse remote version for plugin '$slug' on production" >&2
+		return 1
+	fi
 
 	echo "$RESULT"
 }

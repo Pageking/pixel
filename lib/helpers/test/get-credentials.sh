@@ -2,7 +2,9 @@ get_plesk_credentials() {
 	source "${BREW_PREFIX}/libexec/lib/helpers/get-project-name.sh"
 	source "${BREW_PREFIX}/libexec/lib/helpers/env/get-1pass-var.sh"
 
-	local project_name domain vault item_name item_json PLESK_USER PLESK_PASS
+	local project_name domain vault item_name item_json
+	# PLESK_USER/PLESK_PASS are intentionally NOT local: callers rely on these being
+	# exported into their shell after this function returns.
 
 	project_name=$(get_project_name)
 	domain=$(get_1pass_var "Servers" "PK1" "domain")
