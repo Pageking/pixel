@@ -243,6 +243,12 @@ pixel sync-prod-to-dev       # Sync from production to dev environment
 pixel create-layout <slug> <label> [category]
 ```
 
+### Component Commands
+```bash
+pixel create-component <slug>
+```
+Creates a component in `wp-content/themes/pk-theme-child/flex/components/<slug>` with `fields.php`, `frontend.php`, `style.scss`, and `script.js`. Matching files in `~/.config/pixel/templates` are used as templates when present; `{{slug}}` is replaced with the component slug.
+
 ### Management Commands
 ```bash
 pixel test-pull-main                      # Pull latest main branch on test environment
