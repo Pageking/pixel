@@ -113,6 +113,10 @@ case "$COMMAND" in
 	source "${BREW_PREFIX}/libexec/lib/helpers/create-layout.sh"
 	create_layout "$@"
 	;;
+  create-component)
+	source "${BREW_PREFIX}/libexec/lib/helpers/create-component.sh"
+	create_component "$@"
+	;;
   renew-connection-info)
 	source "${BREW_PREFIX}/libexec/lib/helpers/env/renew-connection-info.sh"
 	renew_connection_info "$1"
@@ -189,6 +193,7 @@ case "$COMMAND" in
     echo "Create Commands:"
     echo "    create-layout <layout-slug> <layout-label> <layout-category>"
     echo "                                        Creates a new layout in the layouts folder based on templates in the pixel repo."
+	echo "    create-component <component-slug>   Creates a component with fields.php, frontend.php, style.scss, and script.js."
     echo ""
     echo "Management Commands:"
     echo "    compare-plugin-version <test|prod>  Compare local/remote wp-migrate-db-pro version and update whichever is older"
