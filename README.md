@@ -149,10 +149,10 @@ pixel create-layout hero_banner "Hero Banner"
 This creates a new layout at:
 ```
 wp-content/themes/pk-theme-child/flex/content/layouts/hero_banner/
-├── frontend.php  # Template markup
-├── fields.php    # ACF field configuration
-├── script.js     # JavaScript functionality
-└── style.css     # Layout styles
+├── frontend.php    # Template markup
+├── fields.php      # ACF field configuration
+├── hero_banner.js  # JavaScript functionality
+└── style.scss      # Layout styles
 ```
 
 #### Example 2: Marketing Layout with Category
@@ -174,7 +174,7 @@ When you run the command, the following happens:
    - Creates a folder named after your slug in `wp-content/themes/pk-theme-child/flex/content/layouts/`
    
 2. **File Generation**
-   - Generates four files: `frontend.php`, `fields.php`, `script.js`, and `style.css`
+   - Generates four files: `frontend.php`, `fields.php`, `<slug>.js`, and `style.scss`
    - Files are either created from your custom templates (if they exist) or created as empty files
 
 3. **Placeholder Replacement**
@@ -197,7 +197,7 @@ To maximize productivity and maintain consistency, you can create custom templat
 2. **Create your template files:**
    ```bash
    cd ~/.config/pixel/templates
-   touch frontend.php fields.php script.js style.css
+   touch frontend.php fields.php script.js style.scss
    ```
 
 ### Template Placeholders

@@ -83,24 +83,24 @@ create_layout() {
 		touch fields.php
 	fi
 
-	# Create script.js
+	# Create <layout_slug>.js
 	if [[ -f "$TEMPLATE_DIR/script.js" ]]; then
 		echo "📄 Using script.js template from /.config/pixel/templates/"
 		template_content=$(cat "$TEMPLATE_DIR/script.js")
 		replaced_content=$(replace_placeholders "$template_content" "$layout_slug" "$layout_label")
-		echo "$replaced_content" > script.js
+		echo "$replaced_content" > "$layout_slug.js"
 	else
-		touch script.js
+		touch "$layout_slug.js"
 	fi
 
-	# Create style.css
-	if [[ -f "$TEMPLATE_DIR/style.css" ]]; then
-		echo "📄 Using style.css template from /.config/pixel/templates/"
-		template_content=$(cat "$TEMPLATE_DIR/style.css")
+	# Create style.scss
+	if [[ -f "$TEMPLATE_DIR/style.scss" ]]; then
+		echo "📄 Using style.scss template from /.config/pixel/templates/"
+		template_content=$(cat "$TEMPLATE_DIR/style.scss")
 		replaced_content=$(replace_placeholders "$template_content" "$layout_slug" "$layout_label")
-		echo "$replaced_content" > style.css
+		echo "$replaced_content" > style.scss
 	else
-		touch style.css
+		touch style.scss
 	fi
 
 	echo "✅ Layout '$layout_slug' created successfully!"
