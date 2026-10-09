@@ -7,6 +7,7 @@ source "${BREW_PREFIX}/libexec/lib/helpers/check-ssh-connection.sh"
 source "${BREW_PREFIX}/libexec/lib/helpers/env/get-github-var.sh"
 source "${BREW_PREFIX}/libexec/lib/helpers/env/set-github-var.sh"
 source "${BREW_PREFIX}/libexec/lib/helpers/env/get-1pass-var.sh"
+source "${BREW_PREFIX}/libexec/lib/helpers/test/set-test-noindex.sh"
 check_public_folder
 
 # === CONFIGURATION ===
@@ -134,6 +135,7 @@ EOF
 
 # FIX: Change to 1Password dev team account
 check_ssh_connection "${PLESK_USER}@${IP}" "$PLESK_PASS" 5 10
+
 sshpass -p "${PLESK_PASS}" ssh -T -o IgnoreUnknown=UseKeychain -o PreferredAuthentications=password -o PubkeyAuthentication=no -o IdentitiesOnly=yes "${PLESK_USER}@${IP}" <<EOF
 	set -e
 	bash -lc '
@@ -142,6 +144,7 @@ sshpass -p "${PLESK_PASS}" ssh -T -o IgnoreUnknown=UseKeychain -o PreferredAuthe
 		wp plugin activate wp-migrate-db-pro
 	'
 EOF
+set_test_noindex "$PLESK_USER" "$PLESK_PASS" "$IP"
 
 read -rp "Paste the wp-migrate-db-pro connection string: " migrate_connection_string
 if [[ -z "$migrate_connection_string" ]]; then
@@ -158,3 +161,5 @@ if [[ "$sync_to_test" =~ ^[Yy]$ ]]; then
 	source "${BREW_PREFIX}/libexec/lib/helpers/test/sync-dev-to-test.sh"
 	sync_dev_to_test
 fi
+
+set_test_noindex "$PLESK_USER" "$PLESK_PASS" "$IP"
