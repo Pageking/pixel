@@ -1,0 +1,152 @@
+name: Update Homebrew formula
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  update-homebrew:
+    if: ${{ github.event.release.prerelease == false }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate release and calculate checksum
+        id: release
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          if [[ ! "$RELEASE_TAG" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]; then
+            echo "Expected a stable vX.Y.Z release tag, received '$RELEASE_TAG'." >&2
+            exit 1
+          fi
+
+          version="${RELEASE_TAG#v}"
+          archive_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/archive/refs/tags/${RELEASE_TAG}.tar.gz"
+          curl --fail --location --retry 3 --retry-all-errors --silent --show-error \
+            --header "Authorization: Bearer ${GH_TOKEN}" \
+            --output pixel-release.tar.gz \
+            "$archive_url"
+          sha256=$(sha256sum pixel-release.tar.gz | cut -d ' ' -f 1)
+
+          echo "tag=$RELEASE_TAG" >> "$GITHUB_OUTPUT"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "archive_url=$archive_url" >> "$GITHUB_OUTPUT"
+          echo "sha256=$sha256" >> "$GITHUB_OUTPUT"
+
+      - name: Resolve Homebrew tap default branch
+        id: tap
+        env:
+          GH_TOKEN: ${{ secrets.HOMEBREW_TOOLS_TOKEN }}
+        run: |
+          set -euo pipefail
+          branch=$(gh api repos/Pageking/homebrew-tools --jq '.default_branch')
+          if [[ -z "$branch" ]]; then
+            echo "Could not determine the Homebrew tap's default branch." >&2
+            exit 1
+          fi
+          echo "branch=$branch" >> "$GITHUB_OUTPUT"
+
+      - name: Check out Homebrew tap
+        uses: actions/checkout@v4
+        with:
+          repository: Pageking/homebrew-tools
+          ref: ${{ steps.tap.outputs.branch }}
+          token: ${{ secrets.HOMEBREW_TOOLS_TOKEN }}
+          path: homebrew-tools
+
+      - name: Update and validate formula
+        env:
+          ARCHIVE_URL: ${{ steps.release.outputs.archive_url }}
+          SHA256: ${{ steps.release.outputs.sha256 }}
+          VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          set -euo pipefail
+
+          ruby <<'RUBY'
+          require "rubygems/version"
+
+          path = "homebrew-tools/Formula/pixel.rb"
+          formula = File.read(path)
+          expected = {
+            "url" => ENV.fetch("ARCHIVE_URL"),
+            "sha256" => ENV.fetch("SHA256"),
+            "version" => ENV.fetch("VERSION")
+          }
+
+          current = expected.to_h do |key, _value|
+            lines = formula.lines.grep(/^  #{Regexp.escape(key)} /)
+            abort "Expected exactly one #{key} field in #{path}." unless lines.one?
+
+            match = lines.first.match(/\A  #{Regexp.escape(key)} "([^"]+)"\n?\z/)
+            abort "Could not parse the #{key} field in #{path}." unless match
+
+            [key, match[1]]
+          end
+
+          current_version = Gem::Version.new(current.fetch("version"))
+          release_version = Gem::Version.new(expected.fetch("version"))
+          if current_version > release_version
+            abort "Refusing to downgrade the Homebrew formula from #{current_version} to #{release_version}."
+          end
+          if current_version == release_version && current != expected
+            abort "The Homebrew formula already has version #{release_version} with different metadata."
+          end
+
+          expected.each do |key, value|
+            pattern = /^  #{Regexp.escape(key)} .*$/
+            formula.sub!(pattern, "  #{key} #{value.dump}")
+          end
+
+          File.write(path, formula)
+          RUBY
+
+          ruby -c homebrew-tools/Formula/pixel.rb
+
+      - name: Commit formula update
+        env:
+          TAP_BRANCH: ${{ steps.tap.outputs.branch }}
+          VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          set -euo pipefail
+          cd homebrew-tools
+
+          if git diff --quiet -- Formula/pixel.rb; then
+            echo "Formula already matches Pixel ${VERSION}."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Formula/pixel.rb
+          git commit -m "pixel: update to ${VERSION}"
+          git push origin "HEAD:${TAP_BRANCH}"
+
+      - name: Create Homebrew tap release
+        env:
+          GH_TOKEN: ${{ secrets.HOMEBREW_TOOLS_TOKEN }}
+          RELEASE_TAG: ${{ steps.release.outputs.tag }}
+          VERSION: ${{ steps.release.outputs.version }}
+          TAP_BRANCH: ${{ steps.tap.outputs.branch }}
+        run: |
+          set -euo pipefail
+
+          release_name="Pixel ${VERSION}"
+          if existing_name=$(gh release view "$RELEASE_TAG" --repo Pageking/homebrew-tools --json name --jq '.name' 2>/dev/null); then
+            if [[ "$existing_name" != "$release_name" ]]; then
+              echo "A Homebrew tap release already exists for '$RELEASE_TAG' with title '$existing_name'." >&2
+              exit 1
+            fi
+            echo "Homebrew tap release '$RELEASE_TAG' already exists."
+            exit 0
+          fi
+
+          gh release create "$RELEASE_TAG" \
+            --repo Pageking/homebrew-tools \
+            --target "$TAP_BRANCH" \
+            --title "$release_name" \
+            --notes "Homebrew formula updated for Pixel ${VERSION}."
