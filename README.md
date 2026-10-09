@@ -15,6 +15,12 @@ For 1Password, make sure you have the <a href="https://developer.1password.com/d
 
 For Github, make sure you have authenticated with your own Pageking Github account with `gh auth login`. For more info, check the <a href="https://docs.github.com/en/github-cli/github-cli/quickstart" target="_blank">quickstart guide</a>.
 
+## Homebrew release automation
+
+Publishing a stable GitHub Release tagged `vX.Y.Z` updates the `pixel` formula in `Pageking/homebrew-tools` and creates a matching release in the tap. Prereleases are ignored.
+
+The workflow requires a `HOMEBREW_TOOLS_TOKEN` Actions secret in this repository. Use a fine-grained personal access token scoped to `Pageking/homebrew-tools` with the **Contents: Read and write** permission. The workflow updates the formula directly on the tap's default branch.
+
 ##  Usage
 
 This CLI should always be used in the `/app/public/` folder of your LocalWP folder. All commands should give an error when this requirement is not met.
