@@ -11,13 +11,11 @@ set_github_secret() {
         exit 1
     fi
 
-	local SECRET_NAME SECRET_VALUE RESULT GITHUB_ORG PROJECT_NAME
+	local SECRET_NAME SECRET_VALUE GITHUB_ORG PROJECT_NAME
 	GITHUB_ORG=$(get_1pass_var "Servers" "GitHub" "org")
 	PROJECT_NAME=$(get_github_var "PROJECT_NAME")
 	SECRET_NAME="$1"
 	SECRET_VALUE="$2"
 	
-	RESULT=$(gh secret set "$SECRET_NAME" --body "$SECRET_VALUE" --repo "$GITHUB_ORG/$PROJECT_NAME")
-
-	echo "$RESULT"
+	run_step "Save GitHub secret '$SECRET_NAME'" gh secret set "$SECRET_NAME" --body "$SECRET_VALUE" --repo "$GITHUB_ORG/$PROJECT_NAME"
 }

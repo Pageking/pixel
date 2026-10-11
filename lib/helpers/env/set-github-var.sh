@@ -11,13 +11,11 @@ set_github_var() {
         exit 1
     fi
 
-	local VAR_NAME VAR_VALUE RESULT GITHUB_ORG PROJECT_NAME
+	local VAR_NAME VAR_VALUE GITHUB_ORG PROJECT_NAME
 	GITHUB_ORG=$(get_1pass_var "Servers" "GitHub" "org")
 	PROJECT_NAME=$(get_github_var "PROJECT_NAME")
 	VAR_NAME="$1"
 	VAR_VALUE="$2"
 	
-	RESULT=$(gh variable set "$VAR_NAME" --body "$VAR_VALUE" --repo "$GITHUB_ORG/$PROJECT_NAME")
-
-	echo "$RESULT"
+	run_step "Save GitHub variable '$VAR_NAME'" gh variable set "$VAR_NAME" --body "$VAR_VALUE" --repo "$GITHUB_ORG/$PROJECT_NAME"
 }

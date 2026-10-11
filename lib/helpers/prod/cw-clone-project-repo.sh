@@ -9,12 +9,13 @@ cwCloneProjectRepo() {
         echo "❌ Usage: cwCloneProjectRepo <access_token>"
         exit 1
     fi
-	local PROJECT_NAME SERVER_ID APP_ID
+	local PROJECT_NAME SERVER_ID APP_ID RESULT
 	PROJECT_NAME=$(get_github_var "PROJECT_NAME")
 	SERVER_ID=$(get_github_var "CLOUDWAYS_SERVER_ID")
 	APP_ID=$(get_github_var "CLOUDWAYS_APP_ID")
 
-	curl -s -X POST "https://api.cloudways.com/api/v2/git/clone" \
+	announce_step "Request production project theme clone"
+	RESULT=$(curl -sS --fail-with-body -X POST "https://api.cloudways.com/api/v2/git/clone" \
 	-H "Authorization: Bearer $1" \
 	-H "Content-Type: application/json" \
 	-d "{
@@ -23,5 +24,11 @@ cwCloneProjectRepo() {
 		\"git_url\": \"git@github.com:Pageking/$PROJECT_NAME.git\",
 		\"branch_name\": \"production\",
 		\"deploy_path\": \"wp-content/themes/pk-theme-child/\"
-	}"
+	}")
+
+	if [[ "$(echo "$RESULT" | jq -r '.status')" != "true" ]]; then
+		echo "$RESULT" | jq '.' >&2
+		return 1
+	fi
+	echo "✅ Production project theme clone requested."
 }

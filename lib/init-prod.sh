@@ -18,6 +18,7 @@ check_public_folder
 get_cw_bearer
 
 # SELECT SERVER
+announce_step "Fetch Cloudways servers"
 SERVERS=$(curl -s GET "https://api.cloudways.com/api/v2/server" \
   -H "Authorization: Bearer $ACCESS_TOKEN")
 
@@ -44,6 +45,7 @@ while true; do
 	fi
 done
 
+announce_step "Create Cloudways application"
 NEW_APP=$(curl -s POST "https://api.cloudways.com/api/v2/app" \
 	-H "Authorization: Bearer $ACCESS_TOKEN" \
 	-H "Content-Type: application/json" \
@@ -53,16 +55,16 @@ NEW_APP=$(curl -s POST "https://api.cloudways.com/api/v2/app" \
 		\"app_label\": \"$CW_LABEL\"
 	}")
 
-echo "$NEW_APP" | jq '.'
-
 if [ "$(echo "$NEW_APP" | jq -r '.status')" != true ]; then
 	echo "Failed to create new app"
+	echo "$NEW_APP" | jq '.' >&2
 	exit 1
 fi
 
 OP_ID=$(echo "$NEW_APP" | jq -r '.operation_id')
 echo "Operation ID: $OP_ID"
 
+announce_step "Wait for Cloudways application setup"
 while true; do
 	APP_STATUS=$(curl -s GET "https://api.cloudways.com/api/v2/operation/$OP_ID" \
 		-H "Authorization: Bearer $ACCESS_TOKEN")
@@ -72,7 +74,7 @@ while true; do
 		echo "✅ App created successfully"
 		break
 	fi
-	echo "⏳ App creation in progress..."
+		announce_step "Continue waiting for Cloudways application"
 	sleep 5
 done
 
@@ -81,7 +83,6 @@ echo "✅ New app created successfully with ID: $APP_ID"
 cw_configure_php_fpm "$ACCESS_TOKEN" "$SERVER_ID" "$APP_ID"
 
 getAppFolder "$ACCESS_TOKEN" "$SERVER_ID" "$APP_ID"
-echo "App folder name: $APP_FOLDER_NAME"
 
 set_github_var "CLOUDWAYS_APP_FOLDER" "$APP_FOLDER_NAME"
 set_github_var "CLOUDWAYS_SERVER_IP" "$SERVER_IP"
@@ -92,6 +93,7 @@ set_github_var "CLOUDWAYS_APP_ID" "$APP_ID"
 
 cwGenerateGitSSH "$ACCESS_TOKEN"
 cwCloneMainRepo "$SERVER_USER"
+echo "📦 Requesting production project theme clone..."
 cwCloneProjectRepo "$ACCESS_TOKEN"
 
 read -rp "Do you also want to sync the plugins and database? [y/N]: " sync_to_prod

@@ -52,21 +52,20 @@ OP_ITEM_CREATED=false
 
 cleanup_1pass_item() {
   if [[ "$OP_ITEM_CREATED" == true ]]; then
-    echo "🧹 Removing 1Password item '$OP_ITEM_NAME' due to error..."
-    op item delete "$OP_ITEM_NAME" --vault "$OP_VAULT" 2>/dev/null || true
+    announce_step "Remove test credentials after setup failure"
+    op item delete "$OP_ITEM_NAME" --vault "$OP_VAULT" >/dev/null 2>&1 || true
   fi
 }
 trap cleanup_1pass_item ERR
 
 # Check if item already exists
+announce_step "Check for existing 1Password credentials"
 EXISTING_ITEM=$(op item list --vault "$OP_VAULT" --categories=Login --format=json | jq -r --arg name "$OP_ITEM_NAME" '.[] | select(.title == $name) | .id')
 
 if [[ -n "$EXISTING_ITEM" ]]; then
   echo "⚠️ 1Password item already exists for $OP_ITEM_NAME. Skipping creation."
 else
-  echo "💾 Saving credentials to 1Password..."
-
-  op item create \
+  run_step "Save test credentials to 1Password" op item create \
     --vault "$OP_VAULT" \
     --category Login \
     "username=$PLESK_USER" \
@@ -79,9 +78,9 @@ else
   echo "✅ Credentials saved to 1Password vault '$OP_VAULT' as '$OP_ITEM_NAME'"
 fi
 
-echo "👷 Creating domain on Plesk with project name '$PROJECT_NAME'"
+announce_step "Create test domain, database, and WordPress installation"
 check_ssh_connection "$SERVER"
-ssh -o IgnoreUnknown=UseKeychain "$SERVER" bash <<EOF
+ssh -q -o IgnoreUnknown=UseKeychain "$SERVER" bash <<EOF
 # Exit on first failure
 set -e 
 
@@ -89,13 +88,13 @@ set -e
 plesk bin domain --create ${PROJECT_NAME}.${DOMAIN} -ip $IP -hosting true -www-root $WWW_ROOT -login $PLESK_USER -passwd $PLESK_PASS
 
 # Enable SSH access
-plesk bin subscription -u ${PROJECT_NAME}.${DOMAIN} -shell /bin/sh
+plesk bin subscription -u ${PROJECT_NAME}.${DOMAIN} -shell /bin/sh >/dev/null
 
 # Create database
-plesk bin database --create $DB_NAME -domain ${PROJECT_NAME}.${DOMAIN} -type mysql
+plesk bin database --create $DB_NAME -domain ${PROJECT_NAME}.${DOMAIN} -type mysql >/dev/null
 
 # Create database user
-plesk bin database --create-dbuser $DB_USER -passwd $DB_PASS -domain ${PROJECT_NAME}.${DOMAIN} -server localhost:3306 -database $DB_NAME
+plesk bin database --create-dbuser $DB_USER -passwd $DB_PASS -domain ${PROJECT_NAME}.${DOMAIN} -server localhost:3306 -database $DB_NAME >/dev/null
 
 # Install WP
 plesk ext wp-toolkit --install \
@@ -106,37 +105,38 @@ plesk ext wp-toolkit --install \
     -admin-password $WP_ADMIN_PASS \
     -db-name $DB_NAME \
     -db-user $DB_USER \
-    -db-password $DB_PASS
+    -db-password $DB_PASS >/dev/null
 
 # Clone main theme into created domain
-git clone -b $CORE_VERSION --recurse-submodules $GIT_REPO $TARGET_DIR/pk-theme
+git clone --quiet -b $CORE_VERSION --recurse-submodules $GIT_REPO $TARGET_DIR/pk-theme
 
-git clone -b test git@github.com-info:$(jq -r '.github.org' "$CONFIG_PATH")/${PROJECT_NAME}.git /var/www/vhosts/${PROJECT_NAME}.${DOMAIN}/httpdocs/wp-content/themes/$(jq -r '.github.template_repo' "$CONFIG_PATH")
+git clone --quiet -b test git@github.com-info:$(jq -r '.github.org' "$CONFIG_PATH")/${PROJECT_NAME}.git /var/www/vhosts/${PROJECT_NAME}.${DOMAIN}/httpdocs/wp-content/themes/$(jq -r '.github.template_repo' "$CONFIG_PATH")
 EOF
 echo "✅ Domain created"
 
 if [[ -f "wp-cli.yml" ]]; then
-	echo "🔄 Syncing wp-cli.yml to server..."
-	scp wp-cli.yml "${SERVER}:/var/www/vhosts/${PROJECT_NAME}.${DOMAIN}/httpdocs/"
+  announce_step "Upload wp-cli configuration"
+    scp -q wp-cli.yml "${SERVER}:/var/www/vhosts/${PROJECT_NAME}.${DOMAIN}/httpdocs/" >/dev/null
 else 
 	echo "⚠️ No wp-cli.yml file found in the current folder. Skipping wp-cli.yml upload."
 fi
 
-echo "🔄 Syncing wp-migrate-db-pro plugin to server..."
-rsync -ravz --no-owner --no-group "wp-content/plugins/wp-migrate-db-pro/" "${SERVER}:/var/www/vhosts/${PROJECT_NAME}.${DOMAIN}/httpdocs/wp-content/plugins/wp-migrate-db-pro/"
+announce_step "Upload WP Migrate plugin"
+rsync -azq --no-owner --no-group "wp-content/plugins/wp-migrate-db-pro/" "${SERVER}:/var/www/vhosts/${PROJECT_NAME}.${DOMAIN}/httpdocs/wp-content/plugins/wp-migrate-db-pro/" >/dev/null
 
-echo "🔧 Fixing ownership of wp-migrate-db-pro to match the rest of the vhost..."
+announce_step "Set WP Migrate plugin ownership"
 VHOST_ROOT="/var/www/vhosts/${PROJECT_NAME}.${DOMAIN}/httpdocs"
-ssh -o IgnoreUnknown=UseKeychain "$SERVER" bash <<EOF
+ssh -q -o IgnoreUnknown=UseKeychain "$SERVER" bash >/dev/null <<EOF
 set -e
 OWNER_GROUP=\$(stat -c '%U:%G' "${VHOST_ROOT}/wp-content")
 chown -R "\$OWNER_GROUP" "${VHOST_ROOT}/wp-content/plugins/wp-migrate-db-pro"
 EOF
+announce_step "Create support user and activate WP Migrate plugin"
 
 # FIX: Change to 1Password dev team account
 check_ssh_connection "${PLESK_USER}@${IP}" "$PLESK_PASS" 5 10
 
-sshpass -p "${PLESK_PASS}" ssh -T -o IgnoreUnknown=UseKeychain -o PreferredAuthentications=password -o PubkeyAuthentication=no -o IdentitiesOnly=yes "${PLESK_USER}@${IP}" <<EOF
+sshpass -p "${PLESK_PASS}" ssh -q -T -o IgnoreUnknown=UseKeychain -o PreferredAuthentications=password -o PubkeyAuthentication=no -o IdentitiesOnly=yes "${PLESK_USER}@${IP}" >/dev/null <<EOF
 	set -e
 	bash -lc '
 		cd httpdocs
@@ -151,7 +151,6 @@ if [[ -z "$migrate_connection_string" ]]; then
 	echo "⚠️ No connection string provided. Skipping GitHub secret update."
 else
 	# IDEA: paste this in the 1Pass credentials instead of GH var
-	echo "💾 Saving connection string to GitHub secret..."
 	set_github_var "WPM_TEST_CONNECTION_STRING" "$migrate_connection_string"
 	echo "✅ Connection string saved to GitHub secret"
 fi
@@ -163,3 +162,4 @@ if [[ "$sync_to_test" =~ ^[Yy]$ ]]; then
 fi
 
 set_test_noindex "$PLESK_USER" "$PLESK_PASS" "$IP"
+echo "✅ Test site remains hidden from search engines."

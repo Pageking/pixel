@@ -9,10 +9,10 @@ clean() {
 	(
 		cd "$theme_dir" || exit 1
 
-		echo "🧹 Removing node_modules..."
+		announce_step "Remove theme dependencies"
 		rm -rf node_modules
 
-		echo "📦 Reinstalling dependencies..."
-		npm ci
+		run_step "Install theme dependencies" npm ci
+		echo "✅ Theme dependencies reinstalled."
 	)
 }

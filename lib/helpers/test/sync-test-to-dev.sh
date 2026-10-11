@@ -49,14 +49,13 @@ sync_test_to_dev() {
 			echo "⚠️ No connection string provided. Skipping GitHub secret update."
 		else
 			source "${BREW_PREFIX}/libexec/lib/helpers/env/set-github-var.sh"
-			echo "💾 Saving connection string to GitHub secret..."
 			set_github_var "WPM_TEST_CONNECTION_STRING" "$migrate_connection_string"
 			echo "✅ Connection string saved to GitHub secret"
 			MDB_CONN_STRING=$(get_github_var "WPM_TEST_CONNECTION_STRING")
 		fi
 	fi
 
-	echo "🔃 Syncing uploads/media/database from test"
+    announce_step "Sync database, plugins, and media from test"
 	
 	# Build the migratedb command with conditional flags
     mdb_command="wp migratedb pull $MDB_CONN_STRING"

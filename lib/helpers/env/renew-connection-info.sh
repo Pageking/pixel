@@ -7,9 +7,7 @@ renew_connection_info() {
 
 	select environment in 'Test' 'Production'; 
 	do
-		echo "You selected: $environment"
 			read -rp "Paste the new connection string:" new_connection_string
-			echo "💾 Saving connection string to GitHub variable..."
 		if [[ $environment == 'Test' ]]; then
 			source "${BREW_PREFIX}/libexec/lib/helpers/env/set-github-var.sh"
 			set_github_var "WPM_TEST_CONNECTION_STRING" "$new_connection_string"

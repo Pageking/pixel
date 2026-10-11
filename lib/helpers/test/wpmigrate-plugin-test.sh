@@ -34,11 +34,12 @@ get_remote_plugin_version_test() {
 
 	_wpmigrate_plugin_test_connect || return 1
 
-	RESULT=$(sshpass -p "${PLESK_PASS}" ssh -T -o IgnoreUnknown=UseKeychain -o PreferredAuthentications=password -o PubkeyAuthentication=no -o IdentitiesOnly=yes "${PLESK_USER}@${WPM_TEST_IP}" <<EOF
+	announce_step "Read test '$slug' plugin version" >&2
+	RESULT=$(sshpass -p "${PLESK_PASS}" ssh -q -T -o IgnoreUnknown=UseKeychain -o PreferredAuthentications=password -o PubkeyAuthentication=no -o IdentitiesOnly=yes "${PLESK_USER}@${WPM_TEST_IP}" <<EOF
 	set -e
 	bash -lc '
 		cd httpdocs
-		wp plugin get ${slug} --field=version
+		wp --quiet plugin get ${slug} --field=version
 	'
 EOF
 	) || { echo "❌ Could not read remote version for plugin '$slug' on test" >&2; return 1; }
@@ -57,11 +58,12 @@ update_remote_plugin_test() {
 
 	_wpmigrate_plugin_test_connect || return 1
 
-	sshpass -p "${PLESK_PASS}" ssh -T -o IgnoreUnknown=UseKeychain -o PreferredAuthentications=password -o PubkeyAuthentication=no -o IdentitiesOnly=yes "${PLESK_USER}@${WPM_TEST_IP}" <<EOF
+	announce_step "Update test '$slug' plugin"
+	sshpass -p "${PLESK_PASS}" ssh -q -T -o IgnoreUnknown=UseKeychain -o PreferredAuthentications=password -o PubkeyAuthentication=no -o IdentitiesOnly=yes "${PLESK_USER}@${WPM_TEST_IP}" >/dev/null <<EOF
 	set -e
 	bash -lc '
 		cd httpdocs
-		wp plugin update ${slug}
+		wp --quiet plugin update ${slug}
 	'
 EOF
 }

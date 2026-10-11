@@ -45,10 +45,9 @@ clone_layout() {
 	fi
 
 	# Copy the block
-    echo "📦 Cloning $layout_name..."
-    if rsync -r --exclude="components.json" "$layout_path/" "$dest_path/"; then
-        echo "Copied to $dest_path"
-        echo "🎉 Done! Block $layout_name is now available."
+	announce_step "Clone Mira layout '$layout_name'"
+	if rsync -rq --exclude="components.json" "$layout_path/" "$dest_path/" >/dev/null; then
+		echo "✅ Mira layout '$layout_name' cloned."
     else
         echo "Failed to copy block"
         exit 1

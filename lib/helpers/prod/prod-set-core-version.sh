@@ -43,12 +43,13 @@ prod_set_core_version() {
 		exit 1
 	fi
 
-	ssh -o IgnoreUnknown=UseKeychain "$SERVER_USER@$SERVER_IP" bash <<EOF
+	announce_step "Set core version '$CORE_VERSION' on production"
+	ssh -q -o IgnoreUnknown=UseKeychain "$SERVER_USER@$SERVER_IP" bash >/dev/null <<EOF
 	set -e
 	cd applications/$APP_FOLDER/public_html/wp-content/themes/pk-theme || exit 1
-	git fetch --all
-	git checkout $CORE_VERSION
-	git submodule update --init
+	git fetch --quiet --all
+	git checkout --quiet $CORE_VERSION
+	git submodule update --quiet --init
 EOF
 
 	echo "✅ Core version set to '$CORE_VERSION' on production."

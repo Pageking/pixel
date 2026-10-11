@@ -12,7 +12,7 @@ cwGenerateGitSSH() {
 	SERVER_ID=$(get_github_var "CLOUDWAYS_SERVER_ID")
 	APP_ID=$(get_github_var "CLOUDWAYS_APP_ID")
 
-	curl -s -X POST "https://api.cloudways.com/api/v2/git/generateKey" \
+	run_step "Generate production Git deploy key" curl -s -X POST "https://api.cloudways.com/api/v2/git/generateKey" \
 		-H "Authorization: Bearer $1" \
 		-H "Content-Type: application/json" \
 		-d "{
@@ -20,6 +20,7 @@ cwGenerateGitSSH() {
 			\"app_id\": \"$APP_ID\"
 	}"
 
+	announce_step "Fetch production Git deploy key"
 	CW_GIT_SSH_KEY=$(curl -s -X GET "https://api.cloudways.com/api/v2/git/key" \
 		-H "Authorization: Bearer $1" \
 		-H "Content-Type: application/json" \
@@ -30,7 +31,8 @@ cwGenerateGitSSH() {
 
 	echo "$CW_GIT_SSH_KEY" > cw_git_key.pub
 
-	gh repo deploy-key add ./cw_git_key.pub --repo "$GITHUB_ORG/$PROJECT_NAME" --title "Cloudways Production - $SERVER_LABEL"
+	run_step "Add production deploy key to GitHub" gh repo deploy-key add ./cw_git_key.pub --repo "$GITHUB_ORG/$PROJECT_NAME" --title "Cloudways Production - $SERVER_LABEL"
 
 	rm -f cw_git_key.pub
+	echo "✅ Production Git deploy key configured."
 }

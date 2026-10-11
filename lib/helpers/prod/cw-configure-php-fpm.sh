@@ -24,7 +24,7 @@ php_admin_value[disable_functions] = getmyuid,passthru,leak,listen,diskfreespace
 EOF
 	)
 
-	echo "🔧 Configuring PHP-FPM settings..."
+	announce_step "Configure PHP-FPM settings"
 
 	FPM_RESPONSE=$(curl -s -X POST "https://api.cloudways.com/api/v2/app/manage/fpm_setting" \
 		-H "Authorization: Bearer $ACCESS_TOKEN" \

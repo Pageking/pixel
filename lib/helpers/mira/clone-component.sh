@@ -32,9 +32,9 @@ clone_component() {
 		fi
 		
 		# Copy the component
-		echo "📦 Cloning component: $component_name..."
-		if rsync -r "$source_path/" "$dest_components_path/$component_name"; then
-			echo "✅ Component '$component_name' successfully cloned"
+		announce_step "Clone Mira component '$component_name'"
+		if rsync -rq "$source_path/" "$dest_components_path/$component_name" >/dev/null; then
+			echo "✅ Mira component '$component_name' cloned."
 		else
 			echo "❌ Failed to clone component '$component_name'"
 		fi

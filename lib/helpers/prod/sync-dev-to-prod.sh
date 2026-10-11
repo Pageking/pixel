@@ -52,14 +52,13 @@ sync_dev_to_prod() {
 			echo "⚠️ No connection string provided. Skipping GitHub secret update."
 		else
 			source "${BREW_PREFIX}/libexec/lib/helpers/env/set-github-var.sh"
-			echo "💾 Saving connection string to GitHub secret..."
 			set_github_var "WPM_PROD_CONNECTION_STRING" "$migrate_connection_string"
 			echo "✅ Connection string saved to GitHub secret"
 			MDB_CONN_STRING=$(get_github_var "WPM_PROD_CONNECTION_STRING")
 		fi
 	fi
 
-	echo "🔃 Syncing uploads/media/database to production"
+	announce_step "Sync database, plugins, and media to production"
 	
 	# Build the migratedb command with conditional flags
     mdb_command="wp migratedb push $MDB_CONN_STRING"
@@ -76,5 +75,5 @@ sync_dev_to_prod() {
         mdb_command="$mdb_command --media=all"
     fi
     
-    eval "$mdb_command"
+	eval "$mdb_command"
 }

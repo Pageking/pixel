@@ -37,12 +37,11 @@ clone_post_layout() {
 		clone_component "$layout_path/components.json"
 	fi
 
-	echo "📦 Cloning $source_name as $local_name..."
-	if rsync -r --exclude="components.json" "$layout_path/" "$dest_path/"; then
+	announce_step "Clone Mira post layout '$source_name' as '$local_name'"
+	if rsync -rq --exclude="components.json" "$layout_path/" "$dest_path/" >/dev/null; then
 		find "$dest_path" -type f \( -name "*.php" -o -name "*.css" -o -name "*.js" \) \
 			-exec sed -i '' "s/${source_name}/${local_name}/g" {} \;
-		echo "Copied to $dest_path"
-		echo "🎉 Done! Post layout '$local_name' is now available."
+		echo "✅ Mira post layout '$local_name' cloned."
 	else
 		echo "Failed to copy post layout"
 		exit 1

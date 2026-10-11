@@ -12,6 +12,7 @@ get_github_var() {
 	VAR_NAME="$1"
 	
 	cd "wp-content/themes/pk-theme-child" || exit 1
+	announce_step "Read GitHub variable '$VAR_NAME'"
 	RESULT=$(gh variable get "$VAR_NAME")
 
 	echo "$RESULT"

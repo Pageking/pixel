@@ -64,16 +64,17 @@ test_set_core_version() {
 	# --- Credentials ---
 	get_plesk_credentials "$PROJECT_NAME" "$DOMAIN" || { echo "Failed to get Plesk credentials"; return 1; }
 
-	ssh -T -o IgnoreUnknown=UseKeychain "${SERVER}" <<EOF
+	announce_step "Set core version '$CORE_VERSION' on test environment"
+	ssh -q -T -o IgnoreUnknown=UseKeychain "${SERVER}" >/dev/null <<EOF
 	set -e
 	bash -lc '
 		cd /
 		cd ${THEME_DIR}
 
 		git config --global --add safe.directory ${THEME_DIR}
-		git fetch --all
-		git checkout ${CORE_VERSION}
-		git submodule update --init
+		git fetch --quiet --all
+		git checkout --quiet ${CORE_VERSION}
+		git submodule update --quiet --init
 	'
 EOF
 	echo "✅ Core version set to '$CORE_VERSION' on test environment."
