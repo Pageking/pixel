@@ -1,18 +1,8 @@
 source "${BREW_PREFIX}/libexec/lib/helpers/env/get-github-var.sh"
 source "${BREW_PREFIX}/libexec/lib/helpers/env/sync-wpmigrate-plugin.sh"
+source "${BREW_PREFIX}/libexec/lib/helpers/env/print-sync-summary.sh"
 
 sync_dev_to_prod() {
-	read -rp "Are you sure you want to sync to the production server? [y/N]" sync_to_prod
-	if [[ "$sync_to_prod" =~ ^[Yy]$ ]]; then
-		read -rp "⚠️ Are you REALLY sure you want to sync to the production server? [y/N]" sync_to_prod_check
-		if [[ "$sync_to_prod_check" != "Y" ]] && [[ "$sync_to_prod_check" != "y" ]]; then
-			echo "❌ Cancelled sync from development to production."
-			exit 0
-		fi
-	fi
-
-	sync_wpmigrate_plugin "prod" || { echo "❌ Aborting sync: wp-migrate-db-pro version mismatch unresolved."; exit 1; }
-
 	local MDB_CONN_STRING skip_plugins skip_database skip_media mdb_command
 
 	# Parse flags
@@ -44,6 +34,18 @@ sync_dev_to_prod() {
         esac
     done
 
+	print_sync_summary "Development" "Production" "${skip_database:-false}" "${skip_plugins:-false}" "${skip_media:-false}"
+	read -rp "Are you sure you want to sync to the production server? [y/N]" sync_to_prod
+	if [[ "$sync_to_prod" =~ ^[Yy]$ ]]; then
+		read -rp "⚠️ Are you REALLY sure you want to sync to the production server? [y/N]" sync_to_prod_check
+		if [[ "$sync_to_prod_check" != "Y" ]] && [[ "$sync_to_prod_check" != "y" ]]; then
+			echo "❌ Cancelled sync from development to production."
+			exit 0
+		fi
+	fi
+
+	sync_wpmigrate_plugin "prod" || { echo "❌ Aborting sync: wp-migrate-db-pro version mismatch unresolved."; exit 1; }
+
 	MDB_CONN_STRING=$(get_github_var "WPM_PROD_CONNECTION_STRING")
 
 	if [[ -z "$MDB_CONN_STRING" ]]; then
@@ -58,8 +60,6 @@ sync_dev_to_prod() {
 		fi
 	fi
 
-	announce_step "Sync database, plugins, and media to production"
-	
 	# Build the migratedb command with conditional flags
     mdb_command="wp migratedb push $MDB_CONN_STRING"
     
@@ -74,6 +74,5 @@ sync_dev_to_prod() {
     if [[ "$skip_media" != true ]]; then
         mdb_command="$mdb_command --media=all"
     fi
-    
 	eval "$mdb_command"
 }

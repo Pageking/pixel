@@ -1,15 +1,8 @@
 source "${BREW_PREFIX}/libexec/lib/helpers/env/get-github-var.sh"
 source "${BREW_PREFIX}/libexec/lib/helpers/env/sync-wpmigrate-plugin.sh"
+source "${BREW_PREFIX}/libexec/lib/helpers/env/print-sync-summary.sh"
 
 sync_dev_to_test() {
-	read -rp "Are you sure you want to sync to the test server? [y/N]" sync_to_test
-	if [[ "$sync_to_test" != "y" ]] && [[ "$sync_to_test" != "Y" ]]; then
-		echo "Oké dan niet hè."
-		exit 0
-	fi
-
-	sync_wpmigrate_plugin "test" || { echo "❌ Aborting sync: wp-migrate-db-pro version mismatch unresolved."; exit 1; }
-
 	local MDB_CONN_STRING skip_plugins skip_database skip_media mdb_command
 
 	# Parse flags
@@ -41,6 +34,15 @@ sync_dev_to_test() {
         esac
     done
 
+    print_sync_summary "Development" "Test" "${skip_database:-false}" "${skip_plugins:-false}" "${skip_media:-false}"
+    read -rp "Are you sure you want to sync to the test server? [y/N]" sync_to_test
+    if [[ "$sync_to_test" != "y" ]] && [[ "$sync_to_test" != "Y" ]]; then
+        echo "Oké dan niet hè."
+        exit 0
+    fi
+
+    sync_wpmigrate_plugin "test" || { echo "❌ Aborting sync: wp-migrate-db-pro version mismatch unresolved."; exit 1; }
+
 	MDB_CONN_STRING=$(get_github_var "WPM_TEST_CONNECTION_STRING")
 
 	if [[ -z "$MDB_CONN_STRING" ]]; then
@@ -55,8 +57,6 @@ sync_dev_to_test() {
 		fi
 	fi
 
-    announce_step "Sync database, plugins, and media to test"
-	
 	# Build the migratedb command with conditional flags
     mdb_command="wp migratedb push $MDB_CONN_STRING"
     
@@ -71,6 +71,5 @@ sync_dev_to_test() {
     if [[ "$skip_media" != true ]]; then
         mdb_command="$mdb_command --media=all"
     fi
-    
     eval "$mdb_command"
 }
