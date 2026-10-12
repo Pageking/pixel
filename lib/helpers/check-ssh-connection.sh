@@ -12,7 +12,7 @@ check_ssh_connection() {
 	local retries="${3:-3}"
 	local timeout="${4:-10}"
 
-	echo "🔌 Checking SSH connection to $host"
+	announce_step "Check SSH connection to $host"
 
 	local attempt=1
 	while [[ $attempt -le $retries ]]; do
@@ -24,7 +24,7 @@ check_ssh_connection() {
 				-o PreferredAuthentications=password \
 				-o PubkeyAuthentication=no \
 				-o IdentitiesOnly=yes \
-				-T "$host" exit 2>/dev/null; then
+				-T "$host" exit >/dev/null 2>&1; then
 				break
 			fi
 		else
@@ -33,7 +33,7 @@ check_ssh_connection() {
 				-o BatchMode=yes \
 				-o IgnoreUnknown=UseKeychain \
 				-o StrictHostKeyChecking=accept-new \
-				"$host" exit 2>/dev/null; then
+				"$host" exit >/dev/null 2>&1; then
 				break
 			fi
 		fi

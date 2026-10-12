@@ -10,8 +10,9 @@ dev() {
     (
         cd "$theme_dir" || exit 1
         if [ ! -d "node_modules" ]; then
-            npm ci || exit 1
+            run_step "Install theme dependencies" npm ci || exit 1
         fi
+        announce_step "Start theme development server"
         npm run dev -- --proxy "http://$project_name.local"
     )
 }

@@ -14,10 +14,11 @@ get_remote_plugin_version_prod() {
 		return 1
 	fi
 
-	RESULT=$(ssh -o IgnoreUnknown=UseKeychain "$SERVER_USER@$SERVER_IP" bash <<EOF
+	announce_step "Read production '$slug' plugin version"
+	RESULT=$(ssh -q -o IgnoreUnknown=UseKeychain "$SERVER_USER@$SERVER_IP" bash <<EOF
 	set -e
 	cd applications/$APP_FOLDER/public_html || exit 1
-	wp plugin get $slug --field=version
+		wp --quiet plugin get $slug --field=version
 EOF
 	) || { echo "❌ Could not read remote version for plugin '$slug' on production" >&2; return 1; }
 
@@ -43,9 +44,10 @@ update_remote_plugin_prod() {
 		return 1
 	fi
 
-	ssh -o IgnoreUnknown=UseKeychain "$SERVER_USER@$SERVER_IP" bash <<EOF
+	announce_step "Update production '$slug' plugin"
+	ssh -q -o IgnoreUnknown=UseKeychain "$SERVER_USER@$SERVER_IP" bash >/dev/null <<EOF
 	set -e
 	cd applications/$APP_FOLDER/public_html || exit 1
-	wp plugin update $slug
+	wp --quiet plugin update $slug
 EOF
 }

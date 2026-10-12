@@ -30,14 +30,14 @@ clone_project() {
 	if [[ -n "${1:-}" ]]; then
 		# Project name provided directly — skip the interactive menu
 		SELECTED_REPO="$1"
-		if ! gh repo view "$GITHUB_ORG/$SELECTED_REPO" --json name &>/dev/null; then
+		if ! run_step "Check repository access for '$SELECTED_REPO'" gh repo view "$GITHUB_ORG/$SELECTED_REPO" --json name; then
 			echo "❌ Error: Repository '$GITHUB_ORG/$SELECTED_REPO' does not exist or is not accessible."
 			exit 1
 		fi
 		echo "📌 Using project: '$SELECTED_REPO'"
 	else
 		# Fetch all repos for the org and present a select menu
-		echo "🔍 Fetching repositories..."
+		announce_step "Fetch project repositories"
 		local REPO_NAMES
 		REPO_NAMES=$(gh search repos --owner "$GITHUB_ORG" -L 100 --json name | jq -r '.[].name' | sort)
 
@@ -56,8 +56,7 @@ clone_project() {
 	fi
 
 	# Clone child theme first — it holds the GitHub variables needed below
-	echo "📦 Cloning '$SELECTED_REPO' into wp-content/themes/pk-theme-child..."
-	git clone "https://github.com/$GITHUB_ORG/$SELECTED_REPO.git" "wp-content/themes/pk-theme-child" &>/dev/null;
+	run_step "Clone child theme '$SELECTED_REPO'" git clone "https://github.com/$GITHUB_ORG/$SELECTED_REPO.git" "wp-content/themes/pk-theme-child"
 	echo "✅ Cloned child theme '$SELECTED_REPO'"
 
 	# Read CORE_VERSION from the project repo's GitHub variables
@@ -72,10 +71,9 @@ clone_project() {
 	fi
 
 	# Clone pk-theme at the pinned version with all submodules
-	echo "📦 Cloning '$MAIN_REPO' at version '$CORE_VERSION' (with submodules)..."
-	git clone -b "$CORE_VERSION" --recurse-submodules \
+	run_step "Clone base theme '$MAIN_REPO' at '$CORE_VERSION'" git clone -b "$CORE_VERSION" --recurse-submodules \
 		"https://github.com/$GITHUB_ORG/$MAIN_REPO.git" \
-		"wp-content/themes/pk-theme" &>/dev/null;
+		"wp-content/themes/pk-theme"
 	echo "✅ Cloned pk-theme at version '$CORE_VERSION'"
 
 	# Offer an initial sync if connection strings are available

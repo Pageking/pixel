@@ -1,15 +1,8 @@
 source "${BREW_PREFIX}/libexec/lib/helpers/env/get-github-var.sh"
 source "${BREW_PREFIX}/libexec/lib/helpers/env/sync-wpmigrate-plugin.sh"
+source "${BREW_PREFIX}/libexec/lib/helpers/env/print-sync-summary.sh"
 
 sync_prod_to_dev() {
-	read -rp "Are you sure you want to sync from the production server? [y/N]" sync_from_prod
-	if [[ "$sync_from_prod" != "Y" ]] && [[ "$sync_from_prod" != "y" ]]; then
-		echo "Oké dan niet hè."
-		exit 0
-	fi
-
-	sync_wpmigrate_plugin "prod" || { echo "❌ Aborting sync: wp-migrate-db-pro version mismatch unresolved."; exit 1; }
-
 	local MDB_CONN_STRING skip_plugins skip_database skip_media mdb_command
 
 	# Parse flags
@@ -41,6 +34,15 @@ sync_prod_to_dev() {
         esac
     done
 
+    print_sync_summary "Production" "Development" "${skip_database:-false}" "${skip_plugins:-false}" "${skip_media:-false}"
+    read -rp "Are you sure you want to sync from the production server? [y/N]" sync_from_prod
+    if [[ "$sync_from_prod" != "Y" ]] && [[ "$sync_from_prod" != "y" ]]; then
+        echo "Oké dan niet hè."
+        exit 0
+    fi
+
+    sync_wpmigrate_plugin "prod" || { echo "❌ Aborting sync: wp-migrate-db-pro version mismatch unresolved."; exit 1; }
+
 	MDB_CONN_STRING=$(get_github_var "WPM_PROD_CONNECTION_STRING")
 
 	if [[ -z "$MDB_CONN_STRING" ]]; then
@@ -49,15 +51,12 @@ sync_prod_to_dev() {
 			echo "⚠️ No connection string provided. Skipping GitHub secret update."
 		else
 			source "${BREW_PREFIX}/libexec/lib/helpers/env/set-github-var.sh"
-			echo "💾 Saving connection string to GitHub secret..."
 			set_github_var "WPM_PROD_CONNECTION_STRING" "$migrate_connection_string"
 			echo "✅ Connection string saved to GitHub secret"
 			MDB_CONN_STRING=$(get_github_var "WPM_PROD_CONNECTION_STRING")
 		fi
 	fi
 
-	echo "🔃 Syncing uploads/media/database from production"
-	
 	# Build the migratedb command with conditional flags
     mdb_command="wp migratedb pull $MDB_CONN_STRING"
     
@@ -72,6 +71,5 @@ sync_prod_to_dev() {
     if [[ "$skip_media" != true ]]; then
         mdb_command="$mdb_command --media=all"
     fi
-    
     eval "$mdb_command"
 }

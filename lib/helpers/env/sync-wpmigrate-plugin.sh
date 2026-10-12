@@ -55,7 +55,7 @@ sync_wpmigrate_plugin() {
 
 	if [[ "$side_to_update" == "local" ]]; then
 		check_public_folder
-		wp plugin update "$WPM_PLUGIN_SLUG"
+		run_step "Update local '$WPM_PLUGIN_SLUG' plugin" wp plugin update "$WPM_PLUGIN_SLUG"
 	elif [[ "$environment" == "test" ]]; then
 		update_remote_plugin_test "$WPM_PLUGIN_SLUG"
 	else

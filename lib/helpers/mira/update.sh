@@ -5,5 +5,5 @@ update_mira() {
 	fi
 
 	cd "$HOME/.config/pixel/mira" || exit 1
-	git pull origin
+	run_step "Update Mira layouts repository" git pull origin
 }

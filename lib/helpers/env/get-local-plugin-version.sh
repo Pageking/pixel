@@ -7,6 +7,7 @@ get_local_plugin_version() {
 
 	check_public_folder
 
+	announce_step "Read local '$slug' plugin version"
 	result=$(wp plugin get "$slug" --field=version 2>/dev/null) || {
 		echo "❌ Could not read local version for plugin '$slug'. Is it installed?" >&2
 		return 1

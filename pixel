@@ -6,6 +6,7 @@ set -e
 CONFIG_PATH="$HOME/.config/pixel/config.json"
 BREW_PREFIX=$(brew --prefix pixel)
 EXAMPLE_PATH="${BREW_PREFIX}/config/config.example.json"
+source "${BREW_PREFIX}/libexec/lib/helpers/run-quietly.sh"
 
 if [[ ! -f "$CONFIG_PATH" ]]; then
 	echo "❌ Config not found at $CONFIG_PATH"

@@ -4,6 +4,7 @@ get_cw_bearer() {
 	cw_email=$(get_1pass_var "Servers" "Cloudways" "email")
 	cw_api_key=$(get_1pass_var "Servers" "Cloudways" "api_key")
 
+	announce_step "Authenticate with Cloudways"
 	AUTH_RESPONSE=$(curl -s POST "https://api.cloudways.com/api/v2/oauth/access_token" \
 	-H "Content-Type: application/json" \
 	-d "{\"email\":\"$cw_email\", \"api_key\":\"$cw_api_key\"}")

@@ -35,7 +35,8 @@ removeTest() {
 		exit 1
 	fi
 
-	ssh -o IgnoreUnknown=UseKeychain "$SERVER" bash <<EOF
+	announce_step "Remove test environment from Plesk"
+	ssh -q -o IgnoreUnknown=UseKeychain "$SERVER" bash >/dev/null <<EOF
 	# Exit on first failure
 	set -e 
 
@@ -45,7 +46,7 @@ EOF
 
 	# --- Delete 1Password item ---
 	ITEM_NAME="Plesk: ${PROJECT_NAME}.${DOMAIN}"
-	op item delete "$ITEM_NAME" --vault "$VAULT" || {
+	run_step "Delete 1Password credentials" op item delete "$ITEM_NAME" --vault "$VAULT" || {
 		echo "❌ Could not delete 1Password item '$ITEM_NAME' from vault '$VAULT'"
 		return 1
 	}

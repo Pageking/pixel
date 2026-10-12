@@ -23,11 +23,11 @@ cwCloneMainRepo() {
 		CORE_VERSION="main"
 	fi
 
-	ssh -o IgnoreUnknown=UseKeychain "$SERVER_USER@$SERVER_IP" bash <<EOF
+	announce_step "Clone main theme on production"
+	ssh -q -o IgnoreUnknown=UseKeychain "$SERVER_USER@$SERVER_IP" bash >/dev/null <<EOF
 	set -e
 	cd applications/$APP_FOLDER/public_html/wp-content/themes/
-	git clone -b $CORE_VERSION --recurse-submodules $GIT_REPO
+	git clone --quiet -b $CORE_VERSION --recurse-submodules $GIT_REPO
 EOF
-
-	echo "✅ Main theme clone successful"
+	echo "✅ Main theme clone successful."
 }

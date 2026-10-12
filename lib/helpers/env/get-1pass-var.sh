@@ -28,6 +28,7 @@ get_1pass_var() {
         exit 1
     fi
 
+	announce_step "Read 1Password item '$item_name'"
 	result=$(op read "op://$vault_name/$item_name/$field_name")
 
 	echo "$result"
