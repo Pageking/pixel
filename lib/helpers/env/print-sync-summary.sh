@@ -15,7 +15,7 @@ print_sync_summary() {
 	printf '%s\n' '+--------------------------------+----------+----------+----------+'
 	printf '| %-30s | %-8s | %-8s | %-8s |\n' "Direction" "Database" "Plugins" "Media"
 	printf '%s\n' '+--------------------------------+----------+----------+----------+'
-	printf '| %-30s | %s      | %s      | %s      |\n' \
+	printf '| %-30s | %s       | %s       | %s       |\n' \
 		"$source_environment -> $destination_environment" \
 		"$database_status" "$plugins_status" "$media_status"
 	printf '%s\n' '+--------------------------------+----------+----------+----------+'
