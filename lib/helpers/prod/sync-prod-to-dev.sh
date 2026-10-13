@@ -1,9 +1,10 @@
 source "${BREW_PREFIX}/libexec/lib/helpers/env/get-github-var.sh"
-source "${BREW_PREFIX}/libexec/lib/helpers/env/sync-wpmigrate-plugin.sh"
+source "${BREW_PREFIX}/libexec/lib/helpers/env/run-migratedb-sync.sh"
 source "${BREW_PREFIX}/libexec/lib/helpers/env/print-sync-summary.sh"
 
 sync_prod_to_dev() {
-	local MDB_CONN_STRING skip_plugins skip_database skip_media mdb_command
+    local MDB_CONN_STRING MDB_URL MDB_SECRET_KEY MDB_CONN_EXTRA skip_plugins skip_database skip_media
+    local -a mdb_command
 
 	# Parse flags
     while [[ $# -gt 0 ]]; do
@@ -41,8 +42,6 @@ sync_prod_to_dev() {
         exit 0
     fi
 
-    sync_wpmigrate_plugin "prod" || { echo "❌ Aborting sync: wp-migrate-db-pro version mismatch unresolved."; exit 1; }
-
 	MDB_CONN_STRING=$(get_github_var "WPM_PROD_CONNECTION_STRING")
 
 	if [[ -z "$MDB_CONN_STRING" ]]; then
@@ -57,19 +56,28 @@ sync_prod_to_dev() {
 		fi
 	fi
 
-	# Build the migratedb command with conditional flags
-    mdb_command="wp migratedb pull $MDB_CONN_STRING"
+    MDB_URL=""
+    MDB_SECRET_KEY=""
+    MDB_CONN_EXTRA=""
+    IFS=$' \t\n' read -r MDB_URL MDB_SECRET_KEY MDB_CONN_EXTRA <<< "$MDB_CONN_STRING"
+    if [[ -z "$MDB_URL" || -z "$MDB_SECRET_KEY" || -n "$MDB_CONN_EXTRA" ]]; then
+        echo "❌ WPM_PROD_CONNECTION_STRING must contain a URL and secret key separated by whitespace." >&2
+        return 1
+    fi
+
+    # Build the migratedb command with conditional flags
+    mdb_command=(wp migratedb pull "$MDB_URL" "$MDB_SECRET_KEY")
     
 	if [[ "$skip_database" == true ]]; then
-        mdb_command="$mdb_command --exclude-database"
+        mdb_command+=(--exclude-database)
     fi
 
     if [[ "$skip_plugins" != true ]]; then
-        mdb_command="$mdb_command --plugin-files=all"
+        mdb_command+=(--plugin-files=all)
     fi
     
     if [[ "$skip_media" != true ]]; then
-        mdb_command="$mdb_command --media=all"
+        mdb_command+=(--media=all)
     fi
-    eval "$mdb_command"
+    run_migratedb_sync "prod" "${mdb_command[@]}"
 }
