@@ -76,4 +76,6 @@ cat << EOF > .npmrc
 engine-strict=true
 EOF
 
+run_step "Install NPM packages" npm install
+
 echo "✅ Project '$PROJECT_NAME' initialized with branches: development, test, staging, production"
