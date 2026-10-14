@@ -74,6 +74,7 @@ clone_project() {
 	run_step "Clone base theme '$MAIN_REPO' at '$CORE_VERSION'" git clone -b "$CORE_VERSION" --recurse-submodules \
 		"https://github.com/$GITHUB_ORG/$MAIN_REPO.git" \
 		"wp-content/themes/pk-theme"
+	run_step "Update submodules to latest" git -C "wp-content/themes/pk-theme" submodule update --init --remote
 	echo "✅ Cloned pk-theme at version '$CORE_VERSION'"
 
 	# Offer an initial sync if connection strings are available

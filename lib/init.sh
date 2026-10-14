@@ -34,6 +34,7 @@ MAIN_REPO=$(get_1pass_var "Servers" "GitHub" "main_repo")
 TEMPLATE_REPO=$(get_1pass_var "Servers" "GitHub" "template_repo")
 
 run_step "Clone base theme '$MAIN_REPO'" git clone --recurse-submodules "https://github.com/$GITHUB_ORG/$MAIN_REPO.git"
+run_step "Update submodules to latest" git -C "$MAIN_REPO" submodule update --init --remote
 
 run_step "Create project repository from '$TEMPLATE_REPO'" gh repo create "$GITHUB_ORG/$PROJECT_NAME" \
   --template "$GITHUB_ORG/$TEMPLATE_REPO" \

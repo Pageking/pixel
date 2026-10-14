@@ -109,6 +109,7 @@ plesk ext wp-toolkit --install \
 
 # Clone main theme into created domain
 git clone --quiet -b $CORE_VERSION --recurse-submodules $GIT_REPO $TARGET_DIR/pk-theme
+git -C $TARGET_DIR/pk-theme submodule update --quiet --init --remote
 
 git clone --quiet -b test git@github.com-info:$(jq -r '.github.org' "$CONFIG_PATH")/${PROJECT_NAME}.git /var/www/vhosts/${PROJECT_NAME}.${DOMAIN}/httpdocs/wp-content/themes/$(jq -r '.github.template_repo' "$CONFIG_PATH")
 EOF

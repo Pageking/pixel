@@ -28,6 +28,7 @@ cwCloneMainRepo() {
 	set -e
 	cd applications/$APP_FOLDER/public_html/wp-content/themes/
 	git clone --quiet -b $CORE_VERSION --recurse-submodules $GIT_REPO
+	git -C "$(basename "$GIT_REPO" .git)" submodule update --quiet --init --remote
 EOF
 	echo "✅ Main theme clone successful."
 }
