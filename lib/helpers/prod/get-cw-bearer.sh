@@ -1,14 +1,13 @@
 get_cw_bearer() {
 	source "${BREW_PREFIX}/libexec/lib/helpers/env/get-1pass-var.sh"
-	local cw_email cw_api_key
-	cw_email=$(get_1pass_var "Servers" "Cloudways" "email")
-	cw_api_key=$(get_1pass_var "Servers" "Cloudways" "api_key")
 
 	announce_step "Authenticate with Cloudways"
-	AUTH_RESPONSE=$(curl -s POST "https://api.cloudways.com/api/v2/oauth/access_token" \
-	-H "Content-Type: application/json" \
-	-d "{\"email\":\"$cw_email\", \"api_key\":\"$cw_api_key\"}")
+	ACCESS_TOKEN="$(get_1pass_var "Servers" "Cloudways" "access_token")"
 
-	ACCESS_TOKEN="$(echo "$AUTH_RESPONSE" | jq -r '.access_token')"
+	if [ -z "$ACCESS_TOKEN" ]; then
+		echo "❌ Cloudways access_token not found in 1Password (Servers > Cloudways > access_token)"
+		exit 1
+	fi
+
 	export ACCESS_TOKEN
 }
