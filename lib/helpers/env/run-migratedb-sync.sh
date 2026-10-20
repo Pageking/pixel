@@ -11,10 +11,11 @@ run_migratedb_sync() {
 	fi
 
 	output_file=$(mktemp "${TMPDIR:-/tmp}/pixel.XXXXXX") || return 1
-	if "$@" 2>&1 | tee "$output_file"; then
+	# `script` allocates a PTY so wp keeps its progress bars; piping to tee would disable them.
+	if script -q "$output_file" "$@"; then
 		exit_code=0
 	else
-		exit_code=${PIPESTATUS[0]}
+		exit_code=$?
 	fi
 
 	if [[ "$exit_code" -eq 0 ]]; then
