@@ -102,10 +102,10 @@ plesk ext wp-toolkit --install \
     -installation-path /$WWW_ROOT \
     -admin-email $WP_ADMIN_EMAIL \
     -admin-user $WP_ADMIN \
-    -admin-password $WP_ADMIN_PASS \
+    -admin-password "$WP_ADMIN_PASS" \
     -db-name $DB_NAME \
     -db-user $DB_USER \
-    -db-password $DB_PASS >/dev/null
+    -db-password "$DB_PASS" >/dev/null
 
 # Clone main theme into created domain
 git clone --quiet -b $CORE_VERSION --recurse-submodules $GIT_REPO $TARGET_DIR/pk-theme
