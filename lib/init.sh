@@ -63,7 +63,6 @@ cd "$CLONE_DIR" || exit 1
 run_step "Create development branch" git checkout -b development
 run_step "Push development branch" git push -u origin development
 announce_step "Remove template main branch"
-run_quietly git push origin --delete main >/dev/null 2>&1 || true
 
 for BRANCH in test staging production; do
   run_step "Create $BRANCH branch" git checkout -b "$BRANCH"
@@ -72,6 +71,7 @@ done
 
 run_step "Set test as default branch" gh api -X PATCH "repos/$GITHUB_ORG/$PROJECT_NAME" -f default_branch="test"
 run_step "Return to development branch" git checkout development
+run_quietly git push origin --delete main >/dev/null 2>&1 || true
 
 cat << EOF > .npmrc
 engine-strict=true
