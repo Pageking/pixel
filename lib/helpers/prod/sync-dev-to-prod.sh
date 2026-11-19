@@ -2,6 +2,32 @@ source "${BREW_PREFIX}/libexec/lib/helpers/env/get-github-var.sh"
 source "${BREW_PREFIX}/libexec/lib/helpers/env/run-migratedb-sync.sh"
 source "${BREW_PREFIX}/libexec/lib/helpers/env/print-sync-summary.sh"
 
+# Pulls never bring Gravity Forms entries and WooCommerce orders to dev (see personal-data-exclusions.sh),
+# so pushing the database overwrites them on production.
+confirm_personal_data_loss() {
+	local recent_pull continue_push
+
+	echo
+	read -rp "Heb je recentelijk een prod-to-dev uitgevoerd? [y/N] " recent_pull
+	echo
+	if [[ "$recent_pull" =~ ^[Yy]$ ]]; then
+		echo "⚠️  LET OP: een prod-to-dev neemt geen Gravity Forms-inzendingen en WooCommerce-bestellingen mee."
+		echo "   Deze persoonsgegevens ontbreken lokaal en gaan op de productiesite VERLOREN als je de database pusht."
+	else
+		echo "⚠️  LET OP: je lokale database is waarschijnlijk verouderd."
+		echo "   Persoonsgegevens (Gravity Forms-inzendingen, WooCommerce-bestellingen, klantaccounts) en content die"
+		echo "   op productie zijn toegevoegd, ontbreken mogelijk lokaal en gaan op de productiesite VERLOREN."
+		echo "   Voer eerst een prod-to-dev uit, of gebruik --no-database als je alleen plugins/media wilt pushen."
+	fi
+	echo
+
+	read -rp "Wil je toch doorgaan? [y/N] " continue_push
+	if [[ ! "$continue_push" =~ ^[Yy]$ ]]; then
+		echo "❌ Cancelled sync from development to production."
+		return 1
+	fi
+}
+
 sync_dev_to_prod() {
 	local MDB_CONN_STRING MDB_URL MDB_SECRET_KEY MDB_CONN_EXTRA skip_plugins skip_database skip_media
 	local -a mdb_command
@@ -37,12 +63,18 @@ sync_dev_to_prod() {
 
 	print_sync_summary "Development" "Production" "${skip_database:-false}" "${skip_plugins:-false}" "${skip_media:-false}"
 	read -rp "Are you sure you want to sync to the production server? [y/N]" sync_to_prod
-	if [[ "$sync_to_prod" =~ ^[Yy]$ ]]; then
-		read -rp "⚠️ Are you REALLY sure you want to sync to the production server? [y/N]" sync_to_prod_check
-		if [[ "$sync_to_prod_check" != "Y" ]] && [[ "$sync_to_prod_check" != "y" ]]; then
-			echo "❌ Cancelled sync from development to production."
-			exit 0
-		fi
+	if [[ ! "$sync_to_prod" =~ ^[Yy]$ ]]; then
+		echo "❌ Cancelled sync from development to production."
+		exit 0
+	fi
+	read -rp "⚠️ Are you REALLY sure you want to sync to the production server? [y/N]" sync_to_prod_check
+	if [[ ! "$sync_to_prod_check" =~ ^[Yy]$ ]]; then
+		echo "❌ Cancelled sync from development to production."
+		exit 0
+	fi
+
+	if [[ "$skip_database" != true ]]; then
+		confirm_personal_data_loss || exit 0
 	fi
 
 	MDB_CONN_STRING=$(get_github_var "WPM_PROD_CONNECTION_STRING")

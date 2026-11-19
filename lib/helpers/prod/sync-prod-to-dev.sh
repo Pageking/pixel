@@ -1,9 +1,10 @@
 source "${BREW_PREFIX}/libexec/lib/helpers/env/get-github-var.sh"
 source "${BREW_PREFIX}/libexec/lib/helpers/env/run-migratedb-sync.sh"
 source "${BREW_PREFIX}/libexec/lib/helpers/env/print-sync-summary.sh"
+source "${BREW_PREFIX}/libexec/lib/helpers/env/personal-data-exclusions.sh"
 
 sync_prod_to_dev() {
-    local MDB_CONN_STRING MDB_URL MDB_SECRET_KEY MDB_CONN_EXTRA skip_plugins skip_database skip_media
+    local MDB_CONN_STRING MDB_URL MDB_SECRET_KEY MDB_CONN_EXTRA skip_plugins skip_database skip_media include_personal_data
     local -a mdb_command
 
 	# Parse flags
@@ -21,11 +22,16 @@ sync_prod_to_dev() {
 				skip_media=true
 				shift
 				;;
+			--include-personal-data)
+				include_personal_data=true
+				shift
+				;;
             --help)
-                echo "Usage: pixel sync-dev-to-test [OPTIONS]"
-                echo "  --no-database     Skip database synchronization"
-                echo "  --no-plugins      Skip plugin synchronization"
-                echo "  --no-media     Skip uploads synchronization"
+                echo "Usage: pixel sync-prod-to-dev [OPTIONS]"
+                echo "  --no-database              Skip database synchronization"
+                echo "  --no-plugins               Skip plugin synchronization"
+                echo "  --no-media                 Skip uploads synchronization"
+                echo "  --include-personal-data    Full database sync, including Gravity Forms entries and WooCommerce orders"
                 exit 0
                 ;;
             *)
@@ -79,5 +85,19 @@ sync_prod_to_dev() {
     if [[ "$skip_media" != true ]]; then
         mdb_command+=(--media=all)
     fi
-    run_migratedb_sync "prod" "${mdb_command[@]}"
+
+    if [[ "$skip_database" == true ]]; then
+        run_migratedb_sync "prod" "${mdb_command[@]}"
+        return
+    fi
+
+    if [[ "$include_personal_data" == true ]]; then
+        echo "⚠️  --include-personal-data: Gravity Forms entries and WooCommerce orders WILL be pulled to this machine."
+        run_migratedb_sync "prod" "${mdb_command[@]}"
+        return
+    fi
+
+    apply_personal_data_exclusions || return 1
+    run_migratedb_sync "prod" "${mdb_command[@]}" || return
+    reset_personal_data_tables
 }
