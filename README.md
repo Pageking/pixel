@@ -82,6 +82,9 @@ Or
 > 
 > `--no-media` : Skip Media/Uploads synchronization
 
+> [!IMPORTANT]
+> `pixel sync-test-to-dev` never pulls Gravity Forms entries or WooCommerce orders (personal data). The local tables are recreated empty after the pull. Add `--include-personal-data` for a full database sync.
+
 > [!NOTE]
 > If the pk-theme is updated during development, the pk-theme on the test enviroment is out-of-sync with your local one. To update the pk-theme on the test enviroment, use the `pixel test-pull-main` command.
 
@@ -121,6 +124,12 @@ Or
 > `--no-plugins` : Skip Plugin synchronization
 > 
 > `--no-media` : Skip Media/Uploads synchronization
+
+> [!IMPORTANT]
+> `pixel sync-prod-to-dev` never pulls Gravity Forms entries or WooCommerce orders (personal data). The local tables are recreated empty after the pull. Add `--include-personal-data` for a full database sync.
+
+> [!WARNING]
+> Because of this, `pixel sync-dev-to-prod` overwrites the Gravity Forms entries and WooCommerce orders on production when the database is included. You'll be asked whether you recently ran a prod-to-dev and warned before the push continues.
 
 > [!NOTE]
 > Both sync commands automatically compare your local `wp-migrate-db-pro` plugin version with the version on the production server before syncing, since a mismatch makes `wp migratedb` fail. If the versions differ, you'll be asked to confirm updating whichever side (local or production) is older. You can run this check manually at any time with `pixel compare-plugin-version prod`.
@@ -237,6 +246,7 @@ pixel sync-prod-to-dev       # Sync from production to dev environment
 - `--no-database` - Skip database synchronization
 - `--no-plugins` - Skip plugin synchronization
 - `--no-media` - Skip uploads/media synchronization
+- `--include-personal-data` - (`sync-prod-to-dev`, `sync-test-to-dev`) Also pull Gravity Forms entries and WooCommerce orders
 
 ### Layout Commands
 ```bash
